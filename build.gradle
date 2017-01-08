@@ -33,9 +33,7 @@ dependencies {
     compile files("libs/strongback/strongback-testing.jar")
     compile files("libs/strongback/TalonSRXLibJava.jar")
 }
-natives {
 
-}
 
 group 'frc1793'
 version '1.0-SNAPSHOT'

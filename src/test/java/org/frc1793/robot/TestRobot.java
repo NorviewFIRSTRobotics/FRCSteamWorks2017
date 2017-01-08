@@ -8,8 +8,8 @@ public class TestRobot {
 
     @Test
     public void test() {
-    	//Simplest Test Ever 
-    	Assertions.assertThat(true).isTrue();
+        //Simplest Test Ever
+        Assertions.assertThat(true).isTrue();
     }
 
 }
