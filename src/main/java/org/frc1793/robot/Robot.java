@@ -1,4 +1,3 @@
-/* Created Sat Jan 07 17:41:26 EST 2017 */
 package org.frc1793.robot;
 
 import org.strongback.Strongback;
@@ -12,26 +11,26 @@ import org.strongback.hardware.Hardware;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Robot extends IterativeRobot {
-	private TankDrive drive;
-	private ContinuousRange driveSpeed;
-	private ContinuousRange turnSpeed;
+    private TankDrive drive;
+    private ContinuousRange driveSpeed;
+    private ContinuousRange turnSpeed;
     @Override
     public void robotInit() {
-    	Strongback.configure().recordNoEvents().recordNoData();
-    	
-    	Motor left = Motor.compose(Hardware.Motors.talon(1), Hardware.Motors.talon(2));
-    	Motor right = Motor.compose(Hardware.Motors.talon(3), Hardware.Motors.talon(4));
-    	
-    	drive = new TankDrive(left, right);
-    	
-    	FlightStick joystick = Hardware.HumanInterfaceDevices.logitechAttack3D(0);
-    	driveSpeed = joystick.getPitch();
-    	turnSpeed = joystick.getRoll().invert();
+        Strongback.configure().recordNoEvents().recordNoData();
+
+        Motor left = Motor.compose(Hardware.Motors.talon(1), Hardware.Motors.talon(2));
+        Motor right = Motor.compose(Hardware.Motors.talon(3), Hardware.Motors.talon(4));
+
+        drive = new TankDrive(left, right);
+
+        FlightStick joystick = Hardware.HumanInterfaceDevices.logitechAttack3D(0);
+        driveSpeed = joystick.getPitch();
+        turnSpeed = joystick.getRoll().invert();
     }
     @Override
     public void autonomousInit() {
-    	Strongback.start();
-    	Strongback.submit(new Command(5.0) {
+        Strongback.start();
+        Strongback.submit(new Command(5.0) {
             @Override
             public boolean execute() {
                 drive.arcade(0.5,0);
@@ -53,8 +52,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-    	
-    	drive.arcade(driveSpeed.read(), turnSpeed.read());
+
+        drive.arcade(driveSpeed.read(), turnSpeed.read());
     }
 
     @Override
