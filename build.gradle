@@ -33,7 +33,7 @@ group 'frc1793'
 version '1.0-SNAPSHOT'
 
 gradlerio.robotClass = "org.frc1793.Robot"   //The class for the main Robot Class. Used in manifest
-gradlerio.team = "5333"                                   //Your FRC team number (e.g. 5333 for team 'Can't C#', or 47 for Chief Delphi)
+gradlerio.team = "1793"                                   //Your FRC team number (e.g. 5333 for team 'Can't C#', or 47 for Chief Delphi)
 //gradlerio.rioIP = "10.53.33.20"                         // Uncomment to specify the IP address of the RIO
 
 def robotManifest = {

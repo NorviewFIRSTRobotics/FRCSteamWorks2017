@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.strongback.Strongback;
+import org.strongback.components.CurrentSensor;
 import org.strongback.components.Motor;
+import org.strongback.components.VoltageSensor;
 import org.strongback.components.ui.ContinuousRange;
 import org.strongback.components.ui.FlightStick;
 import org.strongback.drive.TankDrive;
@@ -16,7 +18,7 @@ public class Robot extends IterativeRobot {
     private ContinuousRange turnSpeed;
     @Override
     public void robotInit() {
-        Strongback.configure().recordNoEvents();
+        Strongback.configure();//.recordNoEvents().recordNoData();
 
         Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
         Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
@@ -31,13 +33,20 @@ public class Robot extends IterativeRobot {
         driveSpeed = joystick.getPitch().scale(sensitivity::read);
         turnSpeed = joystick.getRoll().scale(sensitivity::read).invert();
 
+        VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
+        CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
+
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
         // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
         // before we start Strongback...
         Strongback.dataRecorder()
+                .register("Battery Volts",1000, battery::getVoltage)
+                .register("Current load", 1000, current::getCurrent)
                 .register("Left motors", left)
                 .register("Right motors", right)
-                .register("Sensitivity", sensitivity.scaleAsInt(1000));
+                .register("Sensitivity", sensitivity.scaleAsInt(1000))
+                .register("Drive Speed",driveSpeed::read)
+                .register("Turn Speed",turnSpeed::read);
     }
     @Override
     public void autonomousInit() {
