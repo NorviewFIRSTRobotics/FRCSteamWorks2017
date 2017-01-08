@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
     private ContinuousRange turnSpeed;
     @Override
     public void robotInit() {
-        Strongback.configure();//.recordNoEvents().recordNoData();
+        Strongback.configure().recordNoEvents().recordNoData();
 
         Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
         Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
