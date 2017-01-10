@@ -18,8 +18,6 @@ public class Robot extends IterativeRobot {
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
 
-    private DistanceCamera camera;
-
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
@@ -38,7 +36,6 @@ public class Robot extends IterativeRobot {
         SwitchReactor reactor = Strongback.switchReactor();
         reactor.onTriggered(joystick.getTrigger(), () -> Strongback.logger().info("test"));
 
-        camera = camera();
 
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
@@ -89,8 +86,4 @@ public class Robot extends IterativeRobot {
         LiveWindow.run();
     }
 
-    public static DistanceCamera camera() {
-        DistanceCamera camera = new DistanceCamera();
-        return camera;
-    }
 }
