@@ -57,8 +57,7 @@ public class AimPitchCommandTest {
 
     @Test
     public void shouldStopWhenCancelled() {
-        final double SPEED = 1;
-        tester = new CommandTester(new AimPitchCommand(AimPitchCommand.LOW_GOAL,motor, SPEED, angleSensor));
+        tester = new CommandTester(new AimPitchCommand(90,motor, 1, angleSensor));
         angleSensor.setAngle(0);
         tester.step(START_TIME_MS);
         Assertions.assertThat(motor.getSpeed()).isEqualTo(1,TOLERANCE);
