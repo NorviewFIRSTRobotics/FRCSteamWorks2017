@@ -16,21 +16,32 @@ public class Robot extends IterativeRobot {
     private TankDrive drive;
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
-    private Motor victor;
+
+    private Motor ballLauncher;
+    private ContinuousRange launcherSpeed;
+
 
     @Override
     public void robotInit() {
+
         Strongback.configure().recordNoEvents().recordNoData();
 
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
-        victor = Hardware.Motors.victor(0);
-//        Motor left = Motor.compose(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
-//        Motor right = Motor.compose(Hardware.Motors.talonSRX(2), Hardware.Motors.talonSRX(3));
-//        drive = new TankDrive(left, right);
-        FlightStick stick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
-        driveSpeed = stick.getPitch();
-        turnSpeed = stick.getRoll().invert();
+
+        Motor left = Motor.compose(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
+        Motor right = Motor.compose(Hardware.Motors.talonSRX(2), Hardware.Motors.talonSRX(3));
+        drive = new TankDrive(left, right);
+
+        ballLauncher = Hardware.Motors.victor(0);
+
+        FlightStick driveStick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
+        driveSpeed = driveStick.getPitch().scale(1);
+        turnSpeed = driveStick.getRoll().scale(1).invert();
+
+        //TODO this is a temporary joystick for testing purposes
+        FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
+        launcherSpeed = launcherStick.getPitch().scale(1);
 
 
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
@@ -47,8 +58,6 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         Strongback.start();
         Strongback.submit(new TimedDriveCommand(drive, 0.5, 0.5, false, 5.0));
-
-
     }
 
 
@@ -62,8 +71,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-//        drive.arcade(driveSpeed.read(), turnSpeed.read());
-        victor.setSpeed(driveSpeed.read());
+
+        drive.arcade(driveSpeed.read(), turnSpeed.read());
+
+        ballLauncher.setSpeed(launcherSpeed.read());
     }
 
     @Override
