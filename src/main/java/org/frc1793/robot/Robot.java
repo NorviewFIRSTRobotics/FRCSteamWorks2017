@@ -3,8 +3,10 @@ package org.frc1793.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc1793.robot.commands.FireFuelCommand;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.strongback.Strongback;
+import org.strongback.SwitchReactor;
 import org.strongback.components.CurrentSensor;
 import org.strongback.components.Motor;
 import org.strongback.components.VoltageSensor;
@@ -44,6 +46,8 @@ public class Robot extends IterativeRobot {
         FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
         launcherSpeed = launcherStick.getPitch().scale(configScale("launcher_speed"));
 
+        SwitchReactor reactor = Strongback.switchReactor();
+        reactor.onTriggered(launcherStick.getTrigger(),() -> Strongback.submit(new FireFuelCommand(ballLauncher,configScale("launcher_speed"),1)));
 
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
         // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
@@ -75,7 +79,6 @@ public class Robot extends IterativeRobot {
 
         drive.arcade(driveSpeed.read(), turnSpeed.read());
 
-        ballLauncher.setSpeed(launcherSpeed.read());
     }
 
     @Override
