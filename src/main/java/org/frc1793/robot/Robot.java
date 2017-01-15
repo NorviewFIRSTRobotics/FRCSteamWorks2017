@@ -1,6 +1,7 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.strongback.Strongback;
@@ -17,28 +18,22 @@ public class Robot extends IterativeRobot {
     private TankDrive drive;
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
+    private Motor victor;
 
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
 
-        Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
-        Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
-        drive = new TankDrive(left, right);
-        // Set up the human input controls for teleoperated mode. We want to use the Logitech Attack 3D's throttle as a
-        // "sensitivity" input to scale the drive speed and throttle, so we'll map it from it's native [-1,1] to a simple scale
-        // factor of [0,1] ...
-        FlightStick joystick = Hardware.HumanInterfaceDevices.logitechAttack3D(0);
-        ContinuousRange sensitivity = joystick.getThrottle().map(t -> (t + 1.0) / 2.0);
-        driveSpeed = joystick.getPitch().scale(sensitivity::read);
-        turnSpeed = joystick.getRoll().scale(sensitivity::read).invert();
-
-        SwitchReactor reactor = Strongback.switchReactor();
-        reactor.onTriggered(joystick.getTrigger(), () -> Strongback.logger().info("test"));
-
-
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
+        victor = Hardware.Motors.victor(0);
+//        Motor left = Motor.compose(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
+//        Motor right = Motor.compose(Hardware.Motors.talonSRX(2), Hardware.Motors.talonSRX(3));
+//        drive = new TankDrive(left, right);
+        FlightStick stick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
+        driveSpeed = stick.getPitch();
+        turnSpeed = stick.getRoll().invert();
+
 
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
         // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
@@ -46,9 +41,6 @@ public class Robot extends IterativeRobot {
         Strongback.dataRecorder()
                 .register("Battery Volts", 1000, battery::getVoltage)
                 .register("Current load", 1000, current::getCurrent)
-                .register("Left motors", left)
-                .register("Right motors", right)
-                .register("Sensitivity", sensitivity.scaleAsInt(1000))
                 .register("Drive Speed", driveSpeed::read)
                 .register("Turn Speed", turnSpeed::read);
     }
@@ -61,6 +53,7 @@ public class Robot extends IterativeRobot {
 
     }
 
+
     @Override
     public void teleopInit() {
         // Kill anything running if it is ...
@@ -71,7 +64,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        drive.arcade(driveSpeed.read(), turnSpeed.read());
+//        drive.arcade(driveSpeed.read(), turnSpeed.read());
+        victor.setSpeed(driveSpeed.read());
     }
 
     @Override

@@ -1,17 +1,14 @@
-buildscript {
-    repositories {
-        flatDir dirs: "libs/"
-    }
-    dependencies {
-        classpath group: 'jaci.openrio.gradle', name: 'GradleRIO', version: '+'			//Change this line if you wish to Update GradleRIO
-    }
+plugins {
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jaci.openrio.gradle.GradleRIO" version "2017.1.0"
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'GradleRIO'
-
-sourceCompatibility = 1.8
+frc {
+    team = "1793"
+    robotClass = "org.frc1793.robot.Robot"
+}
 
 repositories {
     mavenCentral()
@@ -19,6 +16,9 @@ repositories {
 }
 
 dependencies {
+    compile wpilib()
+    compile talonSrx()
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'org.easytesting', name: 'fest-assert', version: '1.4'
     compile group: 'org.easytesting', name: 'fest-util', version: '1.1.6'
@@ -26,19 +26,12 @@ dependencies {
     compile group: 'com.codahale.metrics', name: 'metrics-core', version: '+'
 
     compile fileTree(dir: "libs/strongback", include: '**/*.jar')
+
 }
-
-
-group 'frc1793'
-version '1.0-SNAPSHOT'
-
-gradlerio.robotClass = "org.frc1793.Robot"   //The class for the main Robot Class. Used in manifest
-gradlerio.team = "1793"                                   //Your FRC team number (e.g. 5333 for team 'Can't C#', or 47 for Chief Delphi)
-//gradlerio.rioIP = "10.53.33.20"                         // Uncomment to specify the IP address of the RIO
 
 def robotManifest = {
     attributes 'Main-Class': 'edu.wpi.first.wpilibj.RobotBase'
-    attributes 'Robot-Class': gradlerio.robotClass
+    attributes 'Robot-Class': frc.robotClass
 }
 
 jar {
@@ -46,15 +39,6 @@ jar {
     manifest robotManifest
 }
 
-task genJavadoc(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives genJavadoc
-}
-
-fileTree(dir: "libs/strongback", include: '**/*.so').each { File f ->
-    gradlerio.deployers += [ to: "/usr/local/frc/lib/${f.name}.jar", from: f.file ]
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.2.1'
 }
