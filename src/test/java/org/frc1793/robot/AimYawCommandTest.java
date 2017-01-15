@@ -46,18 +46,24 @@ public class AimYawCommandTest {
         // Start the command with the given artificial start time ...
         tester.step(START_TIME_MS);
 
+        //Set angle to 0, less than target
         angleSensor.setAngle(0);
         tester.step(START_TIME_MS+1);
+        //Left motor should be reverse and right forward, we are turning positively towards 90
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(-1,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(1,TOLERANCE);
 
+        //Set angle to 120, greater than target
         angleSensor.setAngle(120);
         tester.step(START_TIME_MS+1);
+        //Left motor should be forward and right reverse, we are turning negatively towards 90
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(1,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(-1,TOLERANCE);
 
+        //Set angle to our target
         angleSensor.setAngle(90);
         tester.step(START_TIME_MS+1);
+        //Should no longer be moving!
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(0,TOLERANCE);
     }
@@ -65,18 +71,23 @@ public class AimYawCommandTest {
     @Test
     public void shouldStopWhenCancelled() {
         tester = new CommandTester(new AimYawCommand(drive,angleSensor,1,1,false,90));
+
+        //Should not be moving
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(0,TOLERANCE);
 
         angleSensor.setAngle(0);
         tester.step(START_TIME_MS+1);
+        //Should be moving
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(-1,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(1,TOLERANCE);
 
         angleSensor.setAngle(0);
 
         tester.cancel();
+        //Cancel the command
         tester.step(START_TIME_MS+1);
+        //Should no longer be moving
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(0,TOLERANCE);
     }

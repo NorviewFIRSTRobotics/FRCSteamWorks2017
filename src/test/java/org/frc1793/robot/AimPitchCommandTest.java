@@ -36,16 +36,22 @@ public class AimPitchCommandTest {
         // Start the command with the given artificial start time ...
         tester.step(START_TIME_MS);
 
+        //Set current angle for launcher to 0
         angleSensor.setAngle(0);
         tester.step(START_TIME_MS+1);
+        //Motor should be moving positively towards 90 degrees
         Assertions.assertThat(motor.getSpeed()).isEqualTo(1,TOLERANCE);
 
+        //Set current angle for launcher to 120
         angleSensor.setAngle(120);
-        tester.step(START_TIME_MS+2);
+        tester.step(START_TIME_MS+1);
+        //Motor should be moving negatively towards 90 degrees
         Assertions.assertThat(motor.getSpeed()).isEqualTo(-1,TOLERANCE);
 
+        //Set current angle to 90
         angleSensor.setAngle(90);
-        tester.step(START_TIME_MS+3);
+        tester.step(START_TIME_MS+1);
+        //Motor should not be moving, we are at our destination
         Assertions.assertThat(motor.getSpeed()).isEqualTo(0,TOLERANCE);
     }
 
