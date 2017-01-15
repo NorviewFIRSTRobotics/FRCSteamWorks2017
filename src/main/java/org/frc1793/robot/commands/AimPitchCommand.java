@@ -3,6 +3,7 @@ package org.frc1793.robot.commands;
 import org.strongback.command.Command;
 import org.strongback.components.AngleSensor;
 import org.strongback.components.Motor;
+import org.strongback.util.Values;
 
 /**
  * Created by melvin on 1/15/2017.
@@ -32,8 +33,8 @@ public class AimPitchCommand extends Command {
     }
     @Override
     public boolean execute() {
-        double dir = angleSensor.computeAngleChangeTo(angle,0.1);
-        motor.setSpeed(dir == 0? 0: dir > 0? speed: -speed);
+        double dir = Values.limit(-1,angleSensor.computeAngleChangeTo(angle,0.1),1);
+        motor.setSpeed(dir);
         return false;
     }
 

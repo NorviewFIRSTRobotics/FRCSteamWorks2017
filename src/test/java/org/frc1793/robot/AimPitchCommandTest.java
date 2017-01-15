@@ -30,7 +30,7 @@ public class AimPitchCommandTest {
     @Test
     public void shouldStopAfterAngleReached() {
         final double SPEED = 1;
-        tester = new CommandTester(new AimPitchCommand(AimPitchCommand.LOW_GOAL,motor, SPEED, angleSensor));
+        tester = new CommandTester(new AimPitchCommand(90,motor, SPEED, angleSensor));
         Assertions.assertThat(motor.getSpeed()).isEqualTo(0,TOLERANCE);
 
         // Start the command with the given artificial start time ...
