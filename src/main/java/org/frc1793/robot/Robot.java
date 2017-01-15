@@ -1,11 +1,9 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.strongback.Strongback;
-import org.strongback.SwitchReactor;
 import org.strongback.components.CurrentSensor;
 import org.strongback.components.Motor;
 import org.strongback.components.VoltageSensor;
