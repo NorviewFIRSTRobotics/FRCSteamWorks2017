@@ -2,7 +2,7 @@ package org.frc1793.robot;
 
 import org.fest.assertions.Assertions;
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.AimCommand;
+import org.frc1793.robot.commands.AimPitchCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
@@ -13,7 +13,7 @@ import org.strongback.mock.MockAngleSensor;
 /**
  * Created by melvin on 1/15/2017.
  */
-public class AimCommandTest  {
+public class AimPitchCommandTest {
     private final Delta TOLERANCE = Delta.delta(0.001);
     private final long START_TIME_MS = 1000;
 
@@ -30,7 +30,7 @@ public class AimCommandTest  {
     @Test
     public void shouldStopAfterAngleReached() {
         final double SPEED = 1;
-        tester = new CommandTester(new AimCommand(AimCommand.LOW_GOAL,motor, SPEED, angleSensor));
+        tester = new CommandTester(new AimPitchCommand(AimPitchCommand.LOW_GOAL,motor, SPEED, angleSensor));
         Assertions.assertThat(motor.getSpeed()).isEqualTo(0,TOLERANCE);
 
         // Start the command with the given artificial start time ...
@@ -52,7 +52,7 @@ public class AimCommandTest  {
     @Test
     public void shouldStopWhenCancelled() {
         final double SPEED = 1;
-        tester = new CommandTester(new AimCommand(AimCommand.LOW_GOAL,motor, SPEED, angleSensor));
+        tester = new CommandTester(new AimPitchCommand(AimPitchCommand.LOW_GOAL,motor, SPEED, angleSensor));
         angleSensor.setAngle(0);
         tester.step(START_TIME_MS);
         Assertions.assertThat(motor.getSpeed()).isEqualTo(1,TOLERANCE);

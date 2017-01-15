@@ -7,7 +7,7 @@ import org.strongback.components.Motor;
 /**
  * Created by melvin on 1/15/2017.
  */
-public class AimCommand extends Command {
+public class AimPitchCommand extends Command {
 
     public static final double HIGH_GOAL = 120;
     public static final double LOW_GOAL = 90;
@@ -24,7 +24,7 @@ public class AimCommand extends Command {
      * @param speed speed for the motor.
      * @param angleSensor sensor to supply the current position of motor
      */
-    public AimCommand(double angle, Motor motor, double speed, AngleSensor angleSensor) {
+    public AimPitchCommand(double angle, Motor motor, double speed, AngleSensor angleSensor) {
         this.angle = angle;
         this.motor = motor;
         this.speed = speed;
