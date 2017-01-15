@@ -23,8 +23,6 @@ public class Robot extends IterativeRobot {
     private ContinuousRange turnSpeed;
 
     private Motor ballLauncher;
-    private ContinuousRange launcherSpeed;
-
 
     @Override
     public void robotInit() {
@@ -107,8 +105,6 @@ public class Robot extends IterativeRobot {
 
             //TODO this is a temporary joystick for testing purposes
             FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
-            launcherSpeed = launcherStick.getPitch().scale(configScale("launcher_speed"));
-
             SwitchReactor reactor = Strongback.switchReactor();
             reactor.onTriggeredSubmit(launcherStick.getTrigger(),() -> new FireFuelCommand(ballLauncher,configScale("launcher_speed"),1));
 

@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
 import org.strongback.components.Motor;
-import org.strongback.drive.TankDrive;
 import org.strongback.mock.Mock;
 
 import static org.fest.assertions.Assertions.assertThat;

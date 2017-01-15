@@ -4,7 +4,12 @@ import org.strongback.command.Command;
 import org.strongback.components.Motor;
 
 /**
- * Created by melvin on 1/15/2017.
+ *
+ *
+ * Purpose:
+ *
+ * @author Tyler Marshall
+ * @version 1/15/2017
  */
 public class FireFuelCommand extends Command {
 

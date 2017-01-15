@@ -11,7 +11,12 @@ import org.strongback.mock.Mock;
 import org.strongback.mock.MockAngleSensor;
 
 /**
- * Created by melvin on 1/15/2017.
+ *
+ *
+ * Purpose:
+ *
+ * @author Tyler Marshall
+ * @version 1/15/2017
  */
 public class AimPitchCommandTest {
     private final Delta TOLERANCE = Delta.delta(0.001);

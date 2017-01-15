@@ -6,7 +6,12 @@ import org.strongback.components.Motor;
 import org.strongback.util.Values;
 
 /**
- * Created by melvin on 1/15/2017.
+ *
+ *
+ * Purpose:
+ *
+ * @author Tyler Marshall
+ * @version 1/15/2017
  */
 public class AimPitchCommand extends Command {
 
@@ -34,7 +39,7 @@ public class AimPitchCommand extends Command {
     @Override
     public boolean execute() {
         double dir = Values.limit(-1,angleSensor.computeAngleChangeTo(angle,0.1),1);
-        motor.setSpeed(dir);
+        motor.setSpeed(speed*dir);
         return false;
     }
 

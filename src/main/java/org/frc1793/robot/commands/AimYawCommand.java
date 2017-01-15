@@ -15,7 +15,6 @@ public class AimYawCommand extends Command {
 
     private final TankDrive drive;
     private AngleSensor angleSensor;
-    private final double driveSpeed;
     private final double turnSpeed;
     private final boolean squareInputs;
     private double angle;
@@ -24,15 +23,13 @@ public class AimYawCommand extends Command {
      * Create a new autonomous command.
      *
      * @param drive        the chassis
-     * @param driveSpeed   the speed at which to drive forward; should be [-1.0, 1.0]
      * @param turnSpeed    the speed at which to turn; should be [-1.0, 1.0]
      * @param squareInputs whether to increase sensitivity at low speeds
      */
-    public AimYawCommand(TankDrive drive, AngleSensor angleSensor, double driveSpeed, double turnSpeed, boolean squareInputs, double angle) {
+    public AimYawCommand(TankDrive drive, AngleSensor angleSensor,double turnSpeed, boolean squareInputs, double angle) {
         super(drive);
         this.drive = drive;
         this.angleSensor = angleSensor;
-        this.driveSpeed = driveSpeed;
         this.turnSpeed = turnSpeed;
         this.squareInputs = squareInputs;
         this.angle = angle;
@@ -41,7 +38,7 @@ public class AimYawCommand extends Command {
     @Override
     public boolean execute() {
         double dir = Values.limit(-1, angleSensor.computeAngleChangeTo(angle, 0.1), 1);
-        drive.arcade(0,dir,squareInputs);
+        drive.arcade(0,turnSpeed*dir,squareInputs);
         return false;
     }
 
