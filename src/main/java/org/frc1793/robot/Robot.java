@@ -2,6 +2,7 @@ package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.strongback.Strongback;
 import org.strongback.components.CurrentSensor;
@@ -29,19 +30,19 @@ public class Robot extends IterativeRobot {
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
 
-        Motor left = Motor.compose(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
-        Motor right = Motor.compose(Hardware.Motors.talonSRX(2), Hardware.Motors.talonSRX(3));
+        Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
+        Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
         drive = new TankDrive(left, right);
 
         ballLauncher = Hardware.Motors.victor(0);
 
         FlightStick driveStick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
-        driveSpeed = driveStick.getPitch().scale(1);
-        turnSpeed = driveStick.getRoll().scale(1).invert();
+        driveSpeed = driveStick.getPitch().scale(configScale("drive_speed"));
+        turnSpeed = driveStick.getRoll().scale(configScale("turn_speed")).invert();
 
         //TODO this is a temporary joystick for testing purposes
         FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
-        launcherSpeed = launcherStick.getPitch().scale(1);
+        launcherSpeed = launcherStick.getPitch().scale(configScale("launcher_speed"));
 
 
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
@@ -89,4 +90,12 @@ public class Robot extends IterativeRobot {
         LiveWindow.run();
     }
 
+    /**
+     * Useful for configurable scaling of joystick inputs on the fly.
+     * @param key String key used to recieve the value from the {@link SmartDashboard}
+     * @return the value of the number from the {@link SmartDashboard} corresponding to key, defaults to 1 if no key is available.
+     */
+    public static double configScale(String key) {
+        return SmartDashboard.getNumber(key,1);
+    }
 }
