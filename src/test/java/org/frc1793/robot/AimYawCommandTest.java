@@ -39,7 +39,7 @@ public class AimYawCommandTest {
 
     @Test
     public void shouldStopAfterAngleReached() {
-        tester = new CommandTester(new AimYawCommand(drive,angleSensor,1,1,false,90));
+        tester = new CommandTester(new AimYawCommand(drive,angleSensor,1,false,90));
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(0,TOLERANCE);
 
@@ -70,7 +70,7 @@ public class AimYawCommandTest {
 
     @Test
     public void shouldStopWhenCancelled() {
-        tester = new CommandTester(new AimYawCommand(drive,angleSensor,1,1,false,90));
+        tester = new CommandTester(new AimYawCommand(drive,angleSensor,1,false,90));
 
         //Should not be moving
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);

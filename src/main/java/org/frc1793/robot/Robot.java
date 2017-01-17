@@ -24,13 +24,16 @@ public class Robot extends IterativeRobot {
 
     private Motor ballLauncher;
 
+    private double drivingSpeed, launchingSpeed;
     @Override
     public void robotInit() {
-
         Strongback.configure().recordNoEvents().recordNoData();
 
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
+
+        drivingSpeed = configScale("drive_speed");
+        launchingSpeed = configScale("launcher_speed");
 
         Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
         Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
@@ -87,6 +90,8 @@ public class Robot extends IterativeRobot {
      * @return the value of the number from the {@link SmartDashboard} corresponding to key, defaults to 1 if no key is available.
      */
     public static double configScale(String key) {
+        if(!SmartDashboard.containsKey(key))
+            SmartDashboard.putNumber(key,1);
         return SmartDashboard.getNumber(key,1);
     }
 
@@ -98,24 +103,24 @@ public class Robot extends IterativeRobot {
         if(joystick.toLowerCase().contains("microsoft") && joystick1.toLowerCase().contains("logitech")) {
             info("Init with dual joysticks %s,%s",joystick,joystick1);
             FlightStick driveStick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
-            driveSpeed = driveStick.getPitch().scale(configScale("drive_speed"));
-            turnSpeed = driveStick.getRoll().scale(configScale("drive_speed"));
+            driveSpeed = driveStick.getPitch().scale(drivingSpeed);
+            turnSpeed = driveStick.getRoll().scale(drivingSpeed);
 
             //TODO this is a temporary joystick for testing purposes
             FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
             SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(launcherStick.getTrigger(),() -> new FireFuelCommand(ballLauncher,configScale("launcher_speed"),1));
+            reactor.onTriggeredSubmit(launcherStick.getTrigger(),() -> new FireFuelCommand(ballLauncher,launchingSpeed,1));
 
         } else {
             info("Init with Controller %s", joystick);
             //If no FlightSticks are available use a gamepad
             Gamepad gamepad = Hardware.HumanInterfaceDevices.logitechDualAction(0);
             //TODO to be determined
-            driveSpeed = gamepad.getLeftY().scale(configScale("drive_speed"));
-            turnSpeed = gamepad.getLeftX().scale(configScale("drive_speed"));
+            driveSpeed = gamepad.getLeftY().scale(drivingSpeed);
+            turnSpeed = gamepad.getLeftX().scale(drivingSpeed);
 
             SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(ballLauncher,configScale("launcher_speed"),1));
+            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(ballLauncher,launchingSpeed,1));
         }
     }
 
