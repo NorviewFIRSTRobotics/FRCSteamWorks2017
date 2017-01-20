@@ -1,7 +1,9 @@
 package org.frc1793.robot.commands;
 
+import org.frc1793.robot.ShooterDrive;
 import org.strongback.command.Command;
 import org.strongback.components.Motor;
+import org.strongback.components.ui.ContinuousRange;
 
 /**
  *
@@ -13,35 +15,37 @@ import org.strongback.components.Motor;
  */
 public class FireFuelCommand extends Command {
 
-    private Motor motor;
-    private double speed;
+    private ShooterDrive drive;
+    private ContinuousRange speed;
 
     /**
-     * Create a firing command
-     * @param motor the launching mechanism
-     * @param speed the speed at which to drive the motor; always positive
+     * Create a firing comm*and
+     * @param drive the launching mechanism
+     * @param speed the speed at which to drive the drive; always positive
      * @param duration the duration of this command; should be positive
      *
      */
-    public FireFuelCommand(Motor motor, double speed, double duration) {
-        super(duration,motor);
-        this.motor = motor;
-        this.speed = Math.abs(speed);
+    public FireFuelCommand(ShooterDrive drive, ContinuousRange speed, double duration) {
+        super(duration,drive);
+        this.drive = drive;
+        this.speed = speed;
+        System.out.println("speed:"+speed);
+        System.out.println("drive:"+drive);
     }
 
     @Override
     public boolean execute() {
-        motor.setSpeed(speed);
+        drive.tank(speed.read());
         return false;
     }
 
     @Override
     public void interrupted() {
-        motor.stop();
+        drive.stop();
     }
 
     @Override
     public void end() {
-        motor.stop();
+        drive.stop();
     }
 }

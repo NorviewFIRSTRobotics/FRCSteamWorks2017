@@ -2,6 +2,7 @@ package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.commands.FireFuelCommand;
@@ -10,8 +11,10 @@ import org.strongback.Strongback;
 import org.strongback.SwitchReactor;
 import org.strongback.components.CurrentSensor;
 import org.strongback.components.Motor;
+import org.strongback.components.Switch;
 import org.strongback.components.VoltageSensor;
 import org.strongback.components.ui.ContinuousRange;
+import org.strongback.components.ui.DirectionalAxis;
 import org.strongback.components.ui.FlightStick;
 import org.strongback.components.ui.Gamepad;
 import org.strongback.drive.TankDrive;
@@ -22,9 +25,8 @@ public class Robot extends IterativeRobot {
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
 
-    private Motor ballLauncher;
-
-    private double drivingSpeed, launchingSpeed;
+    private ShooterDrive shooterDrive;
+    private ContinuousRange shootingSpeed;
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
@@ -32,14 +34,11 @@ public class Robot extends IterativeRobot {
         VoltageSensor battery = Hardware.powerPanel().getVoltageSensor();
         CurrentSensor current = Hardware.powerPanel().getCurrentSensor(0);
 
-        drivingSpeed = configScale("drive_speed");
-        launchingSpeed = configScale("launcher_speed");
-
-        Motor left = Motor.compose(Hardware.Motors.talonSRX(1), Hardware.Motors.talonSRX(2));
-        Motor right = Motor.compose(Hardware.Motors.talonSRX(3), Hardware.Motors.talonSRX(4));
+        Motor left = Motor.compose(Hardware.Motors.talon(0), Hardware.Motors.talon(1));
+        Motor right = Motor.compose(Hardware.Motors.talon(2), Hardware.Motors.talon(3));
         drive = new TankDrive(left, right);
-
-        ballLauncher = Hardware.Motors.victor(0);
+        //hallo from bee! :3
+        shooterDrive = new ShooterDrive(Hardware.Motors.victor(4), Hardware.Motors.victor(5));
 
         initializeHumanInteraction();
         // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
@@ -97,30 +96,34 @@ public class Robot extends IterativeRobot {
 
     public void initializeHumanInteraction() {
         String joystick = DriverStation.getInstance().getJoystickName(0);
-        String joystick1 = DriverStation.getInstance().getJoystickName(1);
-        info("Testing availability of Joysticks 1: %s 2: %s",joystick,joystick1);
+//        String joystick1 = DriverStation.getInstance().getJoystickName(1);
+//        info("Testing availability of Joysticks 1: %s 2: %s",joystick,joystick1);
         //TODO replace contains with proper equals value
-        if(joystick.toLowerCase().contains("microsoft") && joystick1.toLowerCase().contains("logitech")) {
-            info("Init with dual joysticks %s,%s",joystick,joystick1);
-            FlightStick driveStick = Hardware.HumanInterfaceDevices.microsoftSideWinder(0);
-            driveSpeed = driveStick.getPitch().scale(drivingSpeed);
-            turnSpeed = driveStick.getRoll().scale(drivingSpeed);
+        if(joystick.toLowerCase().contains("sidewinder")/* && joystick1.toLowerCase().contains("attack")*/) {
+//            info("Init with dual joysticks %s,%s",joystick,joystick1);
+            FlightStick driveStick = microsoftSideWinder(0);
+            driveSpeed = driveStick.getPitch();
+            turnSpeed = driveStick.getYaw();
 
             //TODO this is a temporary joystick for testing purposes
             FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
+            shootingSpeed = driveStick.getThrottle();
+            shootingSpeed = shootingSpeed != null ? shootingSpeed : () -> 1;
             SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(launcherStick.getTrigger(),() -> new FireFuelCommand(ballLauncher,launchingSpeed,1));
+            reactor.onTriggered(driveStick.getTrigger(),() -> {
+                Strongback.submit(new FireFuelCommand(shooterDrive,shootingSpeed.map( n -> 1-((n+1)/2)),1));
+                info("Firing ball!");
+            });
 
         } else {
             info("Init with Controller %s", joystick);
             //If no FlightSticks are available use a gamepad
             Gamepad gamepad = Hardware.HumanInterfaceDevices.logitechDualAction(0);
             //TODO to be determined
-            driveSpeed = gamepad.getLeftY().scale(drivingSpeed);
-            turnSpeed = gamepad.getLeftX().scale(drivingSpeed);
-
+            driveSpeed = gamepad.getRightY();
+            turnSpeed = gamepad.getRightX();
             SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(ballLauncher,launchingSpeed,1));
+            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(shooterDrive,shootingSpeed,1));
         }
     }
 
@@ -135,4 +138,17 @@ public class Robot extends IterativeRobot {
     public void error(String format, Object... o) {
         Strongback.logger().error(String.format(format,o));
     }
+
+    public static FlightStick microsoftSideWinder(int port) {
+        Joystick joystick = new Joystick(port);
+        joystick.getButtonCount();
+        return FlightStick.create(joystick::getRawAxis, joystick::getRawButton, joystick::getPOV, () -> {
+            return joystick.getY() * -1.0D;
+        }, joystick::getTwist, joystick::getX, joystick::getThrottle, () -> {
+            return joystick.getRawButton(1);
+        }, () -> {
+            return joystick.getRawButton(2);
+        });
+    }
+
 }
