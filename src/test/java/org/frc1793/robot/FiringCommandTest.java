@@ -33,7 +33,7 @@ public class FiringCommandTest {
     }
     @Test
     public void shouldFireAfterDuration() {
-        tester = new CommandTester(new FireFuelCommand(launcher,() -> 1,2));
+        tester = new CommandTester(new FireFuelCommand(launcher,() -> 1, () -> 1,2));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
 
@@ -54,7 +54,7 @@ public class FiringCommandTest {
 
     @Test
     public void shouldStopWhenCancelled() {
-        tester = new CommandTester(new FireFuelCommand(launcher, () -> 1,2));
+        tester = new CommandTester(new FireFuelCommand(launcher, () -> 1, () -> 1,2));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
 

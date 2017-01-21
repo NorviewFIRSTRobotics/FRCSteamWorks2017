@@ -1,8 +1,7 @@
 package org.frc1793.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.commands.FireFuelCommand;
@@ -27,6 +26,7 @@ public class Robot extends IterativeRobot {
 
     private ShooterDrive shooterDrive;
     private ContinuousRange shootingSpeed;
+    private UsbCamera camera;
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
@@ -65,9 +65,9 @@ public class Robot extends IterativeRobot {
         // Start Strongback functions ...
         Strongback.start();
     }
-
     @Override
     public void teleopPeriodic() {
+        SmartDashboard.putNumber("shooterSpeed",shootingSpeed.read());
         drive.arcade(driveSpeed.read(), turnSpeed.read());
     }
 
@@ -96,23 +96,19 @@ public class Robot extends IterativeRobot {
 
     public void initializeHumanInteraction() {
         String joystick = DriverStation.getInstance().getJoystickName(0);
-//        String joystick1 = DriverStation.getInstance().getJoystickName(1);
-//        info("Testing availability of Joysticks 1: %s 2: %s",joystick,joystick1);
         //TODO replace contains with proper equals value
-        if(joystick.toLowerCase().contains("sidewinder")/* && joystick1.toLowerCase().contains("attack")*/) {
-//            info("Init with dual joysticks %s,%s",joystick,joystick1);
+        if(joystick.toLowerCase().contains("sidewinder")) {
             FlightStick driveStick = microsoftSideWinder(0);
             driveSpeed = driveStick.getPitch();
             turnSpeed = driveStick.getYaw();
 
-            //TODO this is a temporary joystick for testing purposes
-            FlightStick launcherStick = Hardware.HumanInterfaceDevices.logitechAttack3D(1);
-            shootingSpeed = driveStick.getThrottle();
+            shootingSpeed = driveStick.getThrottle().map( n -> 1-((n+1)/2));
             shootingSpeed = shootingSpeed != null ? shootingSpeed : () -> 1;
             SwitchReactor reactor = Strongback.switchReactor();
             reactor.onTriggered(driveStick.getTrigger(),() -> {
-                Strongback.submit(new FireFuelCommand(shooterDrive,shootingSpeed.map( n -> 1-((n+1)/2)),1));
-                info("Firing ball!");
+                SmartDashboard.putNumber("shooterSpeed",shootingSpeed.read());
+                info("Firing!");
+                Strongback.submit(new FireFuelCommand(shooterDrive,shootingSpeed,shootingSpeed,3));
             });
 
         } else {
@@ -123,7 +119,7 @@ public class Robot extends IterativeRobot {
             driveSpeed = gamepad.getRightY();
             turnSpeed = gamepad.getRightX();
             SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(shooterDrive,shootingSpeed,1));
+            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(shooterDrive,shootingSpeed,shootingSpeed,1));
         }
     }
 
