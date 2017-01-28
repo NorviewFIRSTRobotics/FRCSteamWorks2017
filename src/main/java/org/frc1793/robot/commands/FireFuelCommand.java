@@ -1,9 +1,7 @@
 package org.frc1793.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.ShooterDrive;
 import org.strongback.command.Command;
-import org.strongback.components.Motor;
 import org.strongback.components.ui.ContinuousRange;
 
 /**
@@ -17,27 +15,24 @@ import org.strongback.components.ui.ContinuousRange;
 public class FireFuelCommand extends Command {
 
     private ShooterDrive drive;
-    private final ContinuousRange left;
-    private final ContinuousRange right;
+    private final ContinuousRange speed;
 
     /**
      * Create a firing comm*and
      * @param drive the launching mechanism
-     * @param left the speed at which to drive the drive; always positive
-     * @param right the speed at which to drive the drive; always positive*
+     * @param speed the speed at which to drive the drive; always positive
      * @param duration the duration of this command; should be positive
      *
      */
-    public FireFuelCommand(ShooterDrive drive, ContinuousRange left, ContinuousRange right, double duration) {
+    public FireFuelCommand(ShooterDrive drive, ContinuousRange speed, double duration) {
         super(duration,drive);
         this.drive = drive;
-        this.left = left;
-        this.right = right;
+        this.speed = speed;
     }
 
     @Override
     public boolean execute() {
-        drive.tank(left.read(),-right.read());
+        drive.drive(speed.read());
         return false;
     }
 
