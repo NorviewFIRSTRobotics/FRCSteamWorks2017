@@ -5,14 +5,13 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.vision.VisionThread;
-import org.frc1793.robot.commands.FireFuelCommand;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.frc1793.robot.vision.Vision;
 import org.strongback.Strongback;
 import org.strongback.SwitchReactor;
 import org.strongback.components.CurrentSensor;
 import org.strongback.components.Motor;
+import org.strongback.components.Switch;
 import org.strongback.components.VoltageSensor;
 import org.strongback.components.ui.ContinuousRange;
 import org.strongback.components.ui.FlightStick;
@@ -26,10 +25,11 @@ public class Robot extends IterativeRobot {
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
 
-    private ShooterDrive shooterDrive;
-    private ContinuousRange shootingSpeed;
+    private ShooterDrive leftShooter, rightShooter;
+    private ContinuousRange leftShooterSpeed, rightShooterSpeed;
 
     private Vision vision;
+
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
@@ -41,13 +41,14 @@ public class Robot extends IterativeRobot {
         Motor right = Motor.compose(Hardware.Motors.talon(2).invert(), Hardware.Motors.talon(3));
         drive = new TankDrive(left, right);
         //hallo from bee! :3
-        shooterDrive = new ShooterDrive(Hardware.Controllers.talonController(4,1,1));
+        this.leftShooter = new ShooterDrive(Hardware.Controllers.talonController(0, 1, 1));
+        this.rightShooter = new ShooterDrive(Hardware.Controllers.talonController(1, 1, 1));
 
-        vision = new Vision();
+//        vision = new Vision();
 //        vision.startCamera();
 
         initializeHumanInteraction();
-        // Set up the data recorder to capture the left & right motor speeds (since both motors on the same side should
+        // Set up the data recorder to capture the leftShooter & rightShooter motor speeds (since both motors on the same side should
         // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
         // before we start Strongback...
         Strongback.dataRecorder()
@@ -74,7 +75,9 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        SmartDashboard.putNumber("shooterSpeed", shootingSpeed.read());
+        SmartDashboard.putNumber("leftShooter shooter speed", leftShooterSpeed.read());
+        SmartDashboard.putNumber("rightShooter shooter speed", rightShooterSpeed.read());
+
         drive.arcade(driveSpeed.read(), turnSpeed.read());
     }
 
@@ -102,41 +105,29 @@ public class Robot extends IterativeRobot {
         return SmartDashboard.getNumber(key, 1);
     }
 
+    public static ContinuousRange getShooterSpeed(ContinuousRange input) {
+        ContinuousRange output = input.map(n -> 1 - ((n + 1) / 2));
+        return output != null ? output : () -> 1;
+    }
+
     public void initializeHumanInteraction() {
-        String joystick = DriverStation.getInstance().getJoystickName(0);
-        //TODO replace contains with proper equals value
-        if (joystick.toLowerCase().contains("sidewinder")) {
-            FlightStick driveStick = microsoftSideWinder(0);
-            driveSpeed = driveStick.getPitch();
-            turnSpeed = driveStick.getYaw().invert();
+        SmartDashboard.putString("Input 0",DriverStation.getInstance().getJoystickName(0));
+        SmartDashboard.putString("Input 1",DriverStation.getInstance().getJoystickName(1));
+        FlightStick driveStick = microsoftSideWinder(0);
+        driveSpeed = driveStick.getPitch();
+        turnSpeed = driveStick.getYaw().invert();
 
-            shootingSpeed = driveStick.getThrottle().map(n -> 1 - ((n + 1) / 2));
-            shootingSpeed = shootingSpeed != null ? shootingSpeed : () -> 1;
-            SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggered(driveStick.getTrigger(), () -> {
+        Gamepad controller = logitechDualAction(1);
+        leftShooterSpeed =  () -> 1;
+        rightShooterSpeed = () -> 1;
 
-                info("Firing!");
-                Strongback.submit(new FireFuelCommand(shooterDrive, shootingSpeed, 3));
-            });
-            reactor.whileTriggered(driveStick.getTrigger(), ()-> {
-                SmartDashboard.putNumber("shooterSpeed", shootingSpeed.read());
-                shooterDrive.drive(shootingSpeed.read());
-            });
-            reactor.whileUntriggered(driveStick.getTrigger(), () -> {
-                SmartDashboard.putNumber("shooterSpeed", shootingSpeed.read());
-            shooterDrive.drive(0);
-        });
-
-    } else {
-        info("Init with Controller %s", joystick);
-        //If no FlightSticks are available use a gamepad
-        Gamepad gamepad = Hardware.HumanInterfaceDevices.logitechDualAction(0);
-        //TODO to be determined
-        driveSpeed = gamepad.getRightY();
-        turnSpeed = gamepad.getRightX();
         SwitchReactor reactor = Strongback.switchReactor();
-            reactor.onTriggeredSubmit(gamepad.getA(), () -> new FireFuelCommand(shooterDrive, shootingSpeed, 1));
-        }
+
+        reactor.whileTriggered(switchFromRange(controller.getLeftTrigger()), () -> leftShooter.drive(leftShooterSpeed.read()));
+        reactor.whileUntriggered(switchFromRange(controller.getLeftTrigger()), () -> leftShooter.stop());
+
+        reactor.whileTriggered(switchFromRange(controller.getRightTrigger()), () -> rightShooter.drive(rightShooterSpeed.read()));
+        reactor.whileUntriggered(switchFromRange(controller.getRightTrigger()), () -> rightShooter.stop());
     }
 
     public void info(String format, Object... o) {
@@ -161,6 +152,34 @@ public class Robot extends IterativeRobot {
         }, () -> {
             return joystick.getRawButton(2);
         });
+    }
+
+    public static Switch switchFromRange(ContinuousRange range) {
+        return () -> range.read() == 1;
+    }
+
+    public static Gamepad logitechDualAction(int port) {
+        Joystick joystick = new Joystick(port);
+        joystick.getButtonCount(); //verify
+        return Gamepad.create(joystick::getRawAxis,
+                joystick::getRawButton,
+                joystick::getPOV,
+                () -> joystick.getRawAxis(0),
+                () -> joystick.getRawAxis(1) * -1,
+                () -> joystick.getRawAxis(2),
+                () -> joystick.getRawAxis(3) * -1,
+                () -> joystick.getRawButton(7) ? 1.0 : 0.0,
+                () -> joystick.getRawButton(8) ? 1.0 : 0.0,
+                () -> joystick.getRawButton(5),
+                () -> joystick.getRawButton(6),
+                () -> joystick.getRawButton(2),
+                () -> joystick.getRawButton(3),
+                () -> joystick.getRawButton(1),
+                () -> joystick.getRawButton(4),
+                () -> joystick.getRawButton(10),
+                () -> joystick.getRawButton(9),
+                () -> joystick.getRawButton(11),
+                () -> joystick.getRawButton(12));
     }
 
 }
