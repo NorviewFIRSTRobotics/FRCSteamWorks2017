@@ -1,6 +1,6 @@
 package org.frc1793.robot.commands;
 
-import org.frc1793.robot.ShooterDrive;
+import org.frc1793.robot.Shooter;
 import org.strongback.command.Command;
 import org.strongback.components.ui.ContinuousRange;
 
@@ -12,37 +12,37 @@ import org.strongback.components.ui.ContinuousRange;
  * @author Tyler Marshall
  * @version 1/15/2017
  */
-public class FireFuelCommand extends Command {
+public class FireCommand extends Command {
 
-    private ShooterDrive drive;
+    private Shooter shooter;
     private final ContinuousRange speed;
 
     /**
      * Create a firing comm*and
      * @param drive the launching mechanism
-     * @param speed the speed at which to drive the drive; always positive
+     * @param speed the speed at which to shooter the shooter; always positive
      * @param duration the duration of this command; should be positive
      *
      */
-    public FireFuelCommand(ShooterDrive drive, ContinuousRange speed, double duration) {
+    public FireCommand(Shooter drive, ContinuousRange speed, double duration) {
         super(duration,drive);
-        this.drive = drive;
+        this.shooter = drive;
         this.speed = speed;
     }
 
     @Override
     public boolean execute() {
-        drive.drive(speed.read());
+        shooter.shooter(speed.read());
         return false;
     }
 
     @Override
     public void interrupted() {
-        drive.stop();
+        shooter.stop();
     }
 
     @Override
     public void end() {
-        drive.stop();
+        shooter.stop();
     }
 }

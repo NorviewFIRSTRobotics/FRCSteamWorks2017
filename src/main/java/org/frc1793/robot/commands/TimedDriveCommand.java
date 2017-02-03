@@ -32,7 +32,7 @@ public class TimedDriveCommand extends Command {
     /**
      * Create a new autonomous command.
      * @param drive the chassis
-     * @param driveSpeed the speed at which to drive forward; should be [-1.0, 1.0]
+     * @param driveSpeed the speed at which to shooter forward; should be [-1.0, 1.0]
      * @param turnSpeed the speed at which to turn; should be [-1.0, 1.0]
      * @param squareInputs whether to increase sensitivity at low speeds
      * @param duration the duration of this command; should be positive

@@ -5,6 +5,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc1793.robot.commands.ContinuousFireCommand;
+import org.frc1793.robot.commands.DisableFireCommand;
+import org.frc1793.robot.commands.SweeperCommand;
 import org.frc1793.robot.commands.TimedDriveCommand;
 import org.frc1793.robot.vision.Vision;
 import org.strongback.Strongback;
@@ -25,11 +28,18 @@ public class Robot extends IterativeRobot {
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
 
-    private ShooterDrive leftShooter, rightShooter;
+    private Shooter leftShooter, rightShooter;
     private ContinuousRange leftShooterSpeed, rightShooterSpeed;
+
+
+    private Sweeper sweeper;
+    private ContinuousRange sweeperSpeed;
+    private SweeperCommand sweeperCommand;
+    public static boolean sweeperRunning;
 
     private Vision vision;
 
+    //Drive PID: 0-3; Sweeper PID: 4; Shooters: CAN Bus
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().recordNoData();
@@ -41,8 +51,11 @@ public class Robot extends IterativeRobot {
         Motor right = Motor.compose(Hardware.Motors.talon(2).invert(), Hardware.Motors.talon(3));
         drive = new TankDrive(left, right);
         //hallo from bee! :3
-        this.leftShooter = new ShooterDrive(Hardware.Controllers.talonController(0, 1, 1));
-        this.rightShooter = new ShooterDrive(Hardware.Controllers.talonController(1, 1, 1));
+        this.leftShooter = new Shooter(Hardware.Controllers.talonController(0, 1, 1));
+        this.rightShooter = new Shooter(Hardware.Controllers.talonController(1, 1, 1));
+
+        this.sweeper = new Sweeper(Hardware.Motors.spark(4));
+        this.sweeperCommand = new SweeperCommand(sweeper, sweeperSpeed);
 
 //        vision = new Vision();
 //        vision.startCamera();
@@ -111,23 +124,41 @@ public class Robot extends IterativeRobot {
     }
 
     public void initializeHumanInteraction() {
-        SmartDashboard.putString("Input 0",DriverStation.getInstance().getJoystickName(0));
-        SmartDashboard.putString("Input 1",DriverStation.getInstance().getJoystickName(1));
+        SmartDashboard.putString("Input 0", DriverStation.getInstance().getJoystickName(0));
+        SmartDashboard.putString("Input 1", DriverStation.getInstance().getJoystickName(1));
         FlightStick driveStick = microsoftSideWinder(0);
         driveSpeed = driveStick.getPitch();
         turnSpeed = driveStick.getYaw().invert();
 
         Gamepad controller = logitechDualAction(1);
-        leftShooterSpeed =  () -> 1;
+        leftShooterSpeed = () -> 1;
         rightShooterSpeed = () -> 1;
+
+        sweeperSpeed = () -> 1;
 
         SwitchReactor reactor = Strongback.switchReactor();
 
-        reactor.whileTriggered(switchFromRange(controller.getLeftTrigger()), () -> leftShooter.drive(leftShooterSpeed.read()));
-        reactor.whileUntriggered(switchFromRange(controller.getLeftTrigger()), () -> leftShooter.stop());
+        //sweeper toggle
+        reactor.onTriggeredSubmit(controller.getA(), () -> {
+            if (sweeperRunning) {
+                sweeperCommand.interrupted();
+                sweeperRunning = false;
+                return null;
+            } else {
+                return sweeperCommand;
+            }
+        });
 
-        reactor.whileTriggered(switchFromRange(controller.getRightTrigger()), () -> rightShooter.drive(rightShooterSpeed.read()));
-        reactor.whileUntriggered(switchFromRange(controller.getRightTrigger()), () -> rightShooter.stop());
+        //two shooters press and hold
+
+        //left shooter
+        reactor.whileTriggered(switchFromRange(controller.getLeftTrigger()), () -> Strongback.submit(new ContinuousFireCommand(leftShooter, leftShooterSpeed)));
+        reactor.onUntriggeredSubmit(switchFromRange(controller.getLeftTrigger()), () -> new DisableFireCommand(leftShooter));
+
+        //right shooter
+        reactor.whileTriggered(switchFromRange(controller.getRightTrigger()), () -> Strongback.submit(new ContinuousFireCommand(rightShooter, rightShooterSpeed)));
+        reactor.onUntriggeredSubmit(switchFromRange(controller.getRightTrigger()), () -> new DisableFireCommand(rightShooter));
+
     }
 
     public void info(String format, Object... o) {
@@ -145,17 +176,20 @@ public class Robot extends IterativeRobot {
     public static FlightStick microsoftSideWinder(int port) {
         Joystick joystick = new Joystick(port);
         joystick.getButtonCount();
-        return FlightStick.create(joystick::getRawAxis, joystick::getRawButton, joystick::getPOV, () -> {
-            return joystick.getY() * -1.0D;
-        }, joystick::getTwist, joystick::getX, joystick::getThrottle, () -> {
-            return joystick.getRawButton(1);
-        }, () -> {
-            return joystick.getRawButton(2);
-        });
+        return FlightStick.create(
+                joystick::getRawAxis,
+                joystick::getRawButton,
+                joystick::getPOV,
+                () -> joystick.getY() * -1.0D,
+                joystick::getTwist,
+                joystick::getX,
+                joystick::getThrottle,
+                () -> joystick.getRawButton(1),
+                () -> joystick.getRawButton(2));
     }
 
     public static Switch switchFromRange(ContinuousRange range) {
-        return () -> range.read() == 1;
+        return () -> ((int) range.read()) == 1;
     }
 
     public static Gamepad logitechDualAction(int port) {

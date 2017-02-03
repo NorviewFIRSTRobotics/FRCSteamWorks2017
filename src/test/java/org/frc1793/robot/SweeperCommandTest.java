@@ -1,12 +1,11 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.FireCommand;
+import org.frc1793.robot.commands.SweeperCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
 import org.strongback.components.Motor;
-import org.strongback.control.PIDController;
 import org.strongback.mock.Mock;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -17,25 +16,23 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Tyler Marshall
  * @version 1/8/17
  */
-public class FiringCommandTest {
+public class SweeperCommandTest {
 
     private final Delta TOLERANCE = Delta.delta(0.001);
     private final long START_TIME_MS = 1000;
 
-    private Shooter launcher;
+    private Sweeper sweeper;
     private Motor motor;
-    private PIDController controller;
     private CommandTester tester;
 
     @Before
     public void beforeEach() {
         motor = Mock.stoppedMotor();
-        controller = Mock.pidController();
-        launcher = new Shooter(motor, controller);
+        sweeper = new Sweeper(motor);
     }
     @Test
-    public void shouldFireAfterDuration() {
-        tester = new CommandTester(new FireCommand(launcher,() -> 1,2));
+    public void shouldContinueouslySweep() {
+        tester = new CommandTester(new SweeperCommand(sweeper,() -> 1));
         assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
 
         // Start the command with the given artificial start time ...
@@ -47,13 +44,12 @@ public class FiringCommandTest {
 
         // Advance time past the 2 seconds ...
         tester.step(START_TIME_MS + 2001);
-        assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
-
+        assertThat(motor.getSpeed()).isEqualTo(1, TOLERANCE);
     }
 
     @Test
     public void shouldStopWhenCancelled() {
-        tester = new CommandTester(new FireCommand(launcher, () -> 1,2));
+        tester = new CommandTester(new SweeperCommand(sweeper, () -> 1));
         assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
         // Start the command with the given artificial start time ...
         tester.step(START_TIME_MS);
