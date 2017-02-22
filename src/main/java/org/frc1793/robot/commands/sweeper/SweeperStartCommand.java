@@ -27,7 +27,7 @@ public class SweeperStartCommand extends Command {
 
     @Override
     public boolean execute() {
-        sweeper.sweep(speed);
+        sweeper.start(speed);
         return false;
     }
 

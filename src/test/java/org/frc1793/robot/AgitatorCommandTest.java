@@ -2,7 +2,7 @@ package org.frc1793.robot;
 
 import org.fest.assertions.Assertions;
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.AgitateStartCommand;
+import org.frc1793.robot.commands.agitator.AgitateStartCommand;
 import org.frc1793.robot.components.HopperAgitators;
 import org.junit.Before;
 import org.junit.Test;

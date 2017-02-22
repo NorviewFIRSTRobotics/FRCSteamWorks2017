@@ -1,4 +1,4 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.agitator;
 
 import org.frc1793.robot.components.HopperAgitators;
 import org.strongback.command.Command;
@@ -17,7 +17,7 @@ public class AgitateStartCommand extends Command {
     }
     @Override
     public boolean execute() {
-        agitators.agitate(speed);
+        agitators.start(speed);
         return false;
     }
 

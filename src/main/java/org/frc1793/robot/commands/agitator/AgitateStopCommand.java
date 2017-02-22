@@ -1,4 +1,4 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.agitator;
 
 import org.frc1793.robot.components.HopperAgitators;
 import org.strongback.command.Command;

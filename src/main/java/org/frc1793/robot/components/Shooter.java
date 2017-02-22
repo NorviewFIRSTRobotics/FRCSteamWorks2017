@@ -1,46 +1,30 @@
 package org.frc1793.robot.components;
 
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import org.frc1793.robot.Robot;
+import org.frc1793.robot.Config;
 import org.strongback.command.Requirable;
-import org.strongback.components.Motor;
 import org.strongback.components.TalonSRX;
-import org.strongback.control.PIDController;
+import org.strongback.components.ui.ContinuousRange;
 import org.strongback.control.TalonController;
-
-import java.util.HashMap;
 
 /**
  * Created by melvin on 1/19/2017.
  * <p>
  * Controller for the fuel shooter
  */
-public class Shooter implements Requirable {
-    private static final HashMap<Double, Double> LOOKUP_TABLE = new HashMap<>();
-    {
-        LOOKUP_TABLE.put(1.0,1.0);
-    }
-    private TalonController talon;
+public class Shooter extends BasicMotor implements Requirable {
 
     public Shooter(TalonController talon) {
-        this.talon = talon.setFeedbackDevice(TalonSRX.FeedbackDevice.QUADRATURE_ENCODER);
+        super(talon);
+        ((TalonController)this.motor).setFeedbackDevice(TalonSRX.FeedbackDevice.QUADRATURE_ENCODER);
     }
 
-    public void shooter(double distance) {
-        fromConfig().setSpeed(calculateSpeed(distance));
-        TalonController.Gains g = talon.getGainsForCurrentProfile();
-        System.out.printf("%s,%s,%s",g.getP(),g.getI(),g.getD());
+    @Override
+    public void start(ContinuousRange speed) {
+        fromConfig().setSpeed(speed.read());
     }
 
     public TalonController fromConfig() {
-        return talon.withGains(Robot.porportional.getAsDouble(), Robot.integral.getAsDouble(), Robot.differential.getAsDouble());
-    }
-    public void stop() {
-        talon.stop();
-    }
-
-    public double calculateSpeed(double d) {
-        return d;
+        return ((TalonController)this.motor).withGains(Config.proportional.getAsDouble(), Config.integral.getAsDouble(), Config.differential.getAsDouble());
     }
 
 }

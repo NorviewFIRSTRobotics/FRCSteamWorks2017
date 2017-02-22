@@ -27,8 +27,7 @@ public class ContinuousFireCommand extends Command {
 
     @Override
     public boolean execute() {
-        System.out.println(speed.read());
-        shooter.shooter(speed.read());
+        shooter.start(speed);
         return false;
     }
 

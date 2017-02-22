@@ -33,7 +33,7 @@ public class SingleFireCommand extends Command {
 
     @Override
     public boolean execute() {
-        shooter.shooter(speed.read());
+        shooter.start(speed);
         return false;
     }
 

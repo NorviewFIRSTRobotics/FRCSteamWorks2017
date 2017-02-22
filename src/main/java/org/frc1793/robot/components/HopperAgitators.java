@@ -4,22 +4,18 @@ import org.strongback.command.Requirable;
 import org.strongback.components.Motor;
 import org.strongback.components.ui.ContinuousRange;
 
-import java.util.function.DoubleSupplier;
-
 /**
  * Created by melvin on 2/8/2017.
  */
-public class HopperAgitators implements Requirable {
-    private Motor left;
-    public HopperAgitators(Motor left) {
-        this.left = left;
+public class HopperAgitators extends BasicMotor implements Requirable {
+
+    public HopperAgitators(Motor motor) {
+        super(motor);
     }
 
-    public void agitate(ContinuousRange speed)  {
-        left.setSpeed(speed.invert().read());
+    @Override
+    public void start(ContinuousRange speed) {
+        motor.setSpeed(speed.invert().read());
     }
 
-    public void stop() {
-        left.stop();
-    }
 }

@@ -18,7 +18,7 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.TimedDriveCommand;
+import org.frc1793.robot.commands.drive.TimedDriveCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
