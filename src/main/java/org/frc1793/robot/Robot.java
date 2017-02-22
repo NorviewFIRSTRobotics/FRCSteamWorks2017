@@ -30,7 +30,6 @@ import org.strongback.components.ui.FlightStick;
 import org.strongback.components.ui.Gamepad;
 import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
-import org.strongback.util.Values;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
