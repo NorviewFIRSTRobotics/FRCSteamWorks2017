@@ -4,6 +4,7 @@ import org.frc1793.robot.Config;
 import org.strongback.command.Requirable;
 import org.strongback.components.TalonSRX;
 import org.strongback.components.ui.ContinuousRange;
+import org.strongback.control.PIDController;
 import org.strongback.control.TalonController;
 
 /**
@@ -13,6 +14,9 @@ import org.strongback.control.TalonController;
  */
 public class Shooter extends BasicMotor implements Requirable {
 
+    public Shooter(TalonSRX talon) {
+        super(talon);
+    }
     public Shooter(TalonController talon) {
         super(talon);
         ((TalonController)this.motor).setFeedbackDevice(TalonSRX.FeedbackDevice.QUADRATURE_ENCODER);
@@ -20,7 +24,10 @@ public class Shooter extends BasicMotor implements Requirable {
 
     @Override
     public void start(ContinuousRange speed) {
-        fromConfig().setSpeed(speed.read());
+        if(!(motor instanceof PIDController))
+            super.start(speed);
+        else
+            fromConfig().setSpeed(speed.read());
     }
 
     public TalonController fromConfig() {

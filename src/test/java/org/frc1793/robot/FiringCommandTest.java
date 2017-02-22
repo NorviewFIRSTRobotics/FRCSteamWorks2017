@@ -1,14 +1,12 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.firing.SingleFireCommand;
+import org.frc1793.robot.commands.firing.ContinuousFireCommand;
 import org.frc1793.robot.components.Shooter;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
-import org.strongback.components.Motor;
-import org.strongback.control.PIDController;
-import org.strongback.control.TalonController;
+import org.strongback.components.TalonSRX;
 import org.strongback.mock.Mock;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -26,48 +24,35 @@ public class FiringCommandTest {
     private final long START_TIME_MS = 1000;
 
     private Shooter launcher;
-    private Motor motor;
-    private PIDController controller;
+    private TalonSRX motor;
     private CommandTester tester;
 
     @Before
     public void beforeEach() {
-        motor = Mock.stoppedMotor();
-        controller = Mock.pidController();
-        launcher = new Shooter((TalonController)Mock.stoppedTalonSRX());
+        motor = Mock.stoppedTalonSRX();
+        launcher = new Shooter(motor);
     }
-//    @Test
+    @Test
     public void shouldFireAfterDuration() {
-        tester = new CommandTester(new SingleFireCommand(launcher,() -> 1,2));
+        double speed = 1;
+        tester = new CommandTester(new ContinuousFireCommand(launcher,() -> speed));
         assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
 
-        // Start the command with the given artificial start time ...
-        tester.step(START_TIME_MS);
-
-        // Start the command and simulate time advancing almost 2 seconds ...
-        tester.step(START_TIME_MS + 1999);
-        assertThat(motor.getSpeed()).isEqualTo(1, TOLERANCE);
-
-        // Advance time past the 2 seconds ...
-        tester.step(START_TIME_MS + 2001);
-        assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
-
+        tester.step(1);
+        assertThat(motor.getSpeed()).isEqualTo(speed, TOLERANCE);
     }
 
-//    @Test
+    @Test
     public void shouldStopWhenCancelled() {
-        tester = new CommandTester(new SingleFireCommand(launcher, () -> 1,2));
+        double speed = 1;
+        tester = new CommandTester(new ContinuousFireCommand(launcher, () -> speed));
         assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
-        // Start the command with the given artificial start time ...
-        tester.step(START_TIME_MS);
 
-        // Start the command and simulate time advancing almost 2 seconds ...
-        tester.step(START_TIME_MS + 1999);
-        assertThat(motor.getSpeed()).isEqualTo(1, TOLERANCE);
+        tester.step(1);
+        assertThat(motor.getSpeed()).isEqualTo(speed, TOLERANCE);
 
-        // Cancel the command, which should interrupt the command and advance the time ...
         tester.cancel();
-        tester.step(START_TIME_MS + 1);
+        tester.step(1);
         assertThat(motor.getSpeed()).isEqualTo(0.0, TOLERANCE);
     }
 }

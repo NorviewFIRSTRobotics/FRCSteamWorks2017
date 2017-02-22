@@ -133,14 +133,14 @@ public class Robot extends IterativeRobot {
         SwitchReactor reactor = Strongback.switchReactor();
 
         if (isControllerDrive.getAsBoolean()) {
-            driveSpeed = controller.getLeftY().map(Utils::fineseControl);
-            turnSpeed = controller.getLeftX().map(n -> Utils.fineseControl(n)).invert();
+            driveSpeed = controller.getLeftY().map(Utils::finesseControl);
+            turnSpeed = controller.getLeftX().map(n -> Utils.finesseControl(n)).invert();
         } else {
-            driveSpeed = driveStick.getPitch().map(Utils::fineseControl);
-            turnSpeed = driveStick.getYaw().invert().map(Utils::fineseControl);
+            driveSpeed = driveStick.getPitch().map(Utils::finesseControl);
+            turnSpeed = driveStick.getYaw().invert().map(Utils::finesseControl);
         }
 
-        sweeperSpeed = controller.getRightY(); //.map(this::fineseControl);
+        sweeperSpeed = controller.getRightY(); //.map(this::finesseControl);
         agitatorSpeed = driveStick.getThrottle().map(n -> (n + 1) / 2);
 
         reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);

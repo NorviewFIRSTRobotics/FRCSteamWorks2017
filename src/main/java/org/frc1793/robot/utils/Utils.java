@@ -2,7 +2,6 @@ package org.frc1793.robot.utils;
 
 import edu.wpi.first.wpilibj.Joystick;
 import org.strongback.components.Switch;
-import org.strongback.components.ui.ContinuousRange;
 import org.strongback.components.ui.DirectionalAxis;
 import org.strongback.components.ui.FlightStick;
 import org.strongback.components.ui.Gamepad;
@@ -15,20 +14,20 @@ import org.strongback.components.ui.Gamepad;
  */
 public class Utils {
 
-    public static double fineseControl(double x) {
+    public static double finesseControl(double x) {
         double a = 0.5, b = 0.5;
         double y;
         if (x > 0) {
-            if (x < a) {
+            if (x <= a) {
                 y = x * b;
             } else {
-                y = x - 0.25;
+                y = x;
             }
         } else {
             if (x > -a) {
                 y = x * b;
             } else {
-                y = x + 0.25;
+                y = x;
             }
         }
         return y;
