@@ -1,4 +1,4 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.firing;
 
 import org.strongback.command.Command;
 import org.strongback.components.AngleSensor;
@@ -13,10 +13,8 @@ import org.strongback.util.Values;
  * @author Tyler Marshall
  * @version 1/15/2017
  */
+@SuppressWarnings("ALL")
 public class AimPitchCommand extends Command {
-
-    public static final double HIGH_GOAL = 120;
-    public static final double LOW_GOAL = 90;
 
     private double angle;
     private Motor motor;

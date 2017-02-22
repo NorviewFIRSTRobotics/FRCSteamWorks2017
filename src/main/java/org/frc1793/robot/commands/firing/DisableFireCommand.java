@@ -1,6 +1,6 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.firing;
 
-import org.frc1793.robot.Shooter;
+import org.frc1793.robot.components.Shooter;
 import org.strongback.command.Command;
 
 /**
@@ -19,7 +19,8 @@ public class DisableFireCommand extends Command {
 
     @Override
     public boolean execute() {
+        shooter.stop();
         Command.cancel(shooter);
-        return false;
+        return true;
     }
 }

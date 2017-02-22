@@ -1,4 +1,4 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.firing;
 
 import org.strongback.command.Command;
 import org.strongback.components.AngleSensor;
@@ -11,6 +11,7 @@ import org.strongback.util.Values;
  * @author Tyler Marshall
  * @version 1/15/17
  */
+@SuppressWarnings("ALL")
 public class AimYawCommand extends Command {
 
     private final TankDrive drive;

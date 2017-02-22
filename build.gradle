@@ -15,7 +15,9 @@ repositories {
 }
 dependencies {
 
+    //noinspection GroovyAssignabilityCheck
     compile wpilib()
+    //noinspection GroovyAssignabilityCheck
     compile talonSrx()
 
 
@@ -36,6 +38,7 @@ def robotManifest = {
 }
 
 jar {
+    //noinspection GroovyAssignabilityCheck
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     manifest robotManifest
 }

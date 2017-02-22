@@ -2,7 +2,7 @@ package org.frc1793.robot;
 
 import org.fest.assertions.Assertions;
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.AimYawCommand;
+import org.frc1793.robot.commands.firing.AimYawCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;

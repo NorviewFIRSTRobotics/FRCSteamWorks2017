@@ -1,4 +1,4 @@
-package org.frc1793.robot.vision;
+package org.frc1793.robot.components.vision;
 
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 import org.opencv.core.*;
@@ -18,8 +18,8 @@ public class GripPipeline implements VisionPipeline {
 
 	//Outputs
 	private Mat hslThresholdOutput = new Mat();
-	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
-	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<>();
+	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<>();
 
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -39,7 +39,7 @@ public class GripPipeline implements VisionPipeline {
 		// Step Find_Contours0:
 		Mat findContoursInput = hslThresholdOutput;
 		boolean findContoursExternalOnly = false;
-		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
+		findContours(findContoursInput, false, findContoursOutput);
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
@@ -138,8 +138,7 @@ public class GripPipeline implements VisionPipeline {
 		final MatOfInt hull = new MatOfInt();
 		output.clear();
 		//operation
-		for (int i = 0; i < inputContours.size(); i++) {
-			final MatOfPoint contour = inputContours.get(i);
+		for (final MatOfPoint contour : inputContours) {
 			final Rect bb = Imgproc.boundingRect(contour);
 			if (bb.width < minWidth || bb.width > maxWidth) continue;
 			if (bb.height < minHeight || bb.height > maxHeight) continue;
@@ -150,14 +149,14 @@ public class GripPipeline implements VisionPipeline {
 			MatOfPoint mopHull = new MatOfPoint();
 			mopHull.create((int) hull.size().height, 1, CvType.CV_32SC2);
 			for (int j = 0; j < hull.size().height; j++) {
-				int index = (int)hull.get(j, 0)[0];
-				double[] point = new double[] { contour.get(index, 0)[0], contour.get(index, 0)[1]};
+				int index = (int) hull.get(j, 0)[0];
+				double[] point = new double[]{contour.get(index, 0)[0], contour.get(index, 0)[1]};
 				mopHull.put(j, 0, point);
 			}
 			final double solid = 100 * area / Imgproc.contourArea(mopHull);
 			if (solid < solidity[0] || solid > solidity[1]) continue;
-			if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
-			final double ratio = bb.width / (double)bb.height;
+			if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount) continue;
+			final double ratio = bb.width / (double) bb.height;
 			if (ratio < minRatio || ratio > maxRatio) continue;
 			output.add(contour);
 		}

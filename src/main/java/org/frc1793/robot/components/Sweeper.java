@@ -1,7 +1,8 @@
-package org.frc1793.robot;
+package org.frc1793.robot.components;
 
 import org.strongback.command.Requirable;
 import org.strongback.components.Motor;
+import org.strongback.components.ui.ContinuousRange;
 
 /**
  * Purpose:
@@ -11,16 +12,16 @@ import org.strongback.components.Motor;
  */
 public class Sweeper implements Requirable {
     private Motor motor;
-
     public Sweeper(Motor motor) {
         this.motor = motor;
     }
 
-    public void sweep(double speed) {
-        this.motor.setSpeed(speed);
+    public void sweep(ContinuousRange speed) {
+        this.motor.setSpeed(speed.read());
     }
 
     public void stop() {
         this.motor.stop();
     }
+
 }

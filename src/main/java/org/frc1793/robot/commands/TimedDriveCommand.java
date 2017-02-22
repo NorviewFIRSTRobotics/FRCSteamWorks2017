@@ -22,6 +22,7 @@ import org.strongback.drive.TankDrive;
 /**
  * The command that drives the robot at a constant forward and turn speed for a specific duration.
  */
+@SuppressWarnings("ALL")
 public class TimedDriveCommand extends Command {
 
     private final TankDrive drive;

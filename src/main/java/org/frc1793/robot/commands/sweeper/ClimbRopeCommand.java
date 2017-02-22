@@ -1,4 +1,4 @@
-package org.frc1793.robot.commands;
+package org.frc1793.robot.commands.sweeper;
 
 import org.strongback.command.Command;
 
@@ -8,7 +8,7 @@ import org.strongback.command.Command;
  * @author Tyler Marshall
  * @version 1/8/17
  */
-public class PlaceGearCommand extends Command {
+public class ClimbRopeCommand extends Command {
     @Override
     public boolean execute() {
         return false;
