@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
 
     private CurrentSensor current;
     private VoltageSensor battery;
-
+    private Autonomous autonomous;
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().setLogLevel(Logger.Level.DEBUG);
@@ -78,6 +78,8 @@ public class Robot extends IterativeRobot {
         this.driverCamera = new DriverCamera();
         this.vision = new Vision();
 
+        this.autonomous = new Autonomous(drive);
+
         this.initializeHumanInteraction();
         // Set up the data recorder to capture the leftShooter & rightShooter motor speeds (since both motors on the same side should
         // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
@@ -92,7 +94,10 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousInit() {
         Strongback.start();
-        Strongback.submit(new TimedDriveCommand(drive, Config.autonomousDriveTime.getAsDouble(), 0, false, 2.0));
+        Config.update();
+
+
+
     }
 
 
