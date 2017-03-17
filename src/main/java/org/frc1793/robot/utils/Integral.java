@@ -9,13 +9,17 @@ public class Integral<T> {
     T accumuation;
     BinaryOperator<T> addition, multiplier;
 
-    protected Integral(BinaryOperator<T> addition, BinaryOperator<T> multipier) {
+    protected Integral(BinaryOperator<T> addition, BinaryOperator<T> multiplier) {
         this.addition = addition;
-        this.multiplier = multipier;
+        this.multiplier = multiplier;
     }
 
     public void integrate(T value, T time) {
-        accumuation = addition.apply(multiplier.apply(value,time),accumuation);
+        T scaled = multiplier.apply(value, time);
+        if (accumuation == null)
+            accumuation = scaled;
+        else
+            accumuation = addition.apply(scaled, accumuation);
     }
 
     public T getValue() {

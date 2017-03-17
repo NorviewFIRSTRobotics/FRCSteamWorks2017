@@ -25,10 +25,10 @@ import org.strongback.drive.TankDrive;
 @SuppressWarnings("ALL")
 public class TimedDriveCommand extends Command {
 
-    private final TankDrive drive;
-    private final double driveSpeed;
-    private final double turnSpeed;
-    private final boolean squareInputs;
+    protected final TankDrive drive;
+    protected double driveSpeed;
+    protected double turnSpeed;
+    protected final boolean squareInputs;
 
     /**
      * Create a new autonomous command.

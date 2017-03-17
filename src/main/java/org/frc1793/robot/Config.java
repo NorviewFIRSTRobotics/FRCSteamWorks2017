@@ -1,13 +1,9 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import org.strongback.command.Command;
 
-import java.util.StringJoiner;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -18,28 +14,7 @@ import java.util.function.Supplier;
  */
 public class Config {
 
-    public enum EnumAuto {
-        FORWARD,
-        FORWARD_LEFT,
-        FORWARD_RIGHT,
-        BACKWARD,
-        BACKWARD_LEFT,
-        BACKWARD_RIGHT,
-        FALLBACK;
-        public static final EnumAuto[] VALUES = values();
 
-        public String getName() {
-            return this.name().toLowerCase();
-        }
-
-        public static EnumAuto fromName(String name) {
-            for (EnumAuto e : VALUES) {
-                if (name.equalsIgnoreCase(e.getName()))
-                    return e;
-            }
-            return FALLBACK;
-        }
-    }
 
     public static DoubleSupplier proportional, integral, differential;
     public static DoubleSupplier autonomousDriveTime;
@@ -49,7 +24,7 @@ public class Config {
     public static Supplier<String> autonomous;
 
     public static void init() {
-        autonomous = config("autonomous",EnumAuto.BACKWARD.getName());
+        autonomous = config("autonomous", Autonomous.EnumAuto.BACKWARD.getName());
         isControllerDrive = config("isControllerDrive", false);
         autonomousDriveTime = config("autonomousDriveTime", 0.5);
 

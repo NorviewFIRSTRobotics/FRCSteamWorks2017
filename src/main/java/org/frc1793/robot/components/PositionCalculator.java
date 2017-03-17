@@ -18,30 +18,45 @@ public class PositionCalculator implements DistanceSensor {
     private long delta, prev, current;
     private DoubleVectorIntegral velocity = new DoubleVectorIntegral(), position = new DoubleVectorIntegral();
 
-    public PositionCalculator(ThreeAxisAccelerometer accelerometer) {
-        this.clock = Strongback.timeSystem();
+    public PositionCalculator(Clock clock,ThreeAxisAccelerometer accelerometer) {
+        this.clock = clock;
         this.accelerometer = accelerometer;
-
+        this.current = prev = clock.currentTimeInMicros();
+    }
+    public PositionCalculator(ThreeAxisAccelerometer accelerometer) {
+        this(Strongback.timeSystem(),accelerometer);
     }
 
     public void calculatePosition() {
-        current = clock.currentTimeInMillis();
+        current = clock.currentTimeInMicros();
         delta = current - prev;
         prev = current;
-        DoubleVector deltaVector = new DoubleVector((double)delta);
+        DoubleVector deltaVector = new DoubleVector((double)delta/1000000);
         ThreeAxisAcceleration a = accelerometer.getAcceleration();
         velocity.integrate(new DoubleVector(a.getX(),a.getY(),a.getZ()), deltaVector);
+
         position.integrate(velocity.getValue(), deltaVector);
+        System.out.println(deltaVector);
+        System.out.println(a);
+        System.out.println(velocity.getValue());
+        System.out.println(position.getValue());
     }
 
+
+    public double getSquareDistance() {
+        double x = position.getValue().getX();
+        double y = position.getValue().getY();
+        double z = position.getValue().getZ();
+        return x*x + y*y + z*z;
+    }
     @Override
     public double getDistanceInInches() {
-        return 0;
+        return Math.sqrt(getSquareDistance());
     }
 
     @Override
     public double getDistanceInFeet() {
-        return 0;
+        return getDistanceInInches()/12;
     }
 
     @Override

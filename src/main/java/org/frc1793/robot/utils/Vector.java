@@ -13,19 +13,39 @@ public class Vector<T> {
         this.y = y;
         this.z = z;
     }
+    public Vector(T a) {
+        x = y = z = a;
+    }
 
     public Vector add(Vector<T> vector, BinaryOperator<T> add) {
         return this.add(vector.x, vector.y, vector.z, add);
     }
 
     public Vector add(T x, T y, T z, BinaryOperator<T> add) {
-        add.apply(this.x, x);
-        add.apply(this.y, y);
-        add.apply(this.z, z);
+        this.x = add.apply(this.x, x);
+        this.y = add.apply(this.y, y);
+        this.z = add.apply(this.z, z);
         return this;
     }
 
     public Vector multiply(Vector<T> vector, BinaryOperator<T> multiply) {
         return new Vector(multiply.apply(this.x, vector.x), multiply.apply(this.y, vector.y), multiply.apply(this.z, vector.z));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<%s,%s,%s>", x, y, z);
+    }
+
+    public T getX() {
+        return x;
+    }
+
+    public T getY() {
+        return y;
+    }
+
+    public T getZ() {
+        return z;
     }
 }

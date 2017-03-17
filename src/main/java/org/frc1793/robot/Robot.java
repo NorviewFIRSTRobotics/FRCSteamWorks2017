@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.commands.agitator.AgitateStartCommand;
 import org.frc1793.robot.commands.agitator.AgitateStopCommand;
+import org.frc1793.robot.commands.drive.DriveUtils;
 import org.frc1793.robot.commands.firing.ContinuousFireCommand;
 import org.frc1793.robot.commands.firing.DisableFireCommand;
 import org.frc1793.robot.commands.sweeper.SweeperStartCommand;
@@ -62,6 +63,7 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
         Strongback.configure().recordNoEvents().setLogLevel(Logger.Level.DEBUG);
         Config.init();
+        DriveUtils.init(drive);
 
         this.battery = Hardware.powerPanel().getVoltageSensor();
         this.current = Hardware.powerPanel().getTotalCurrentSensor();
@@ -83,15 +85,7 @@ public class Robot extends IterativeRobot {
         this.position = new PositionCalculator(Hardware.Accelerometers.builtIn());
 
         this.initializeHumanInteraction();
-        // Set up the data recorder to capture the leftShooter & rightShooter motor speeds (since both motors on the same side should
-        // be at the same speed, we can just use the composed motors for each) and the sensitivity. We have to do this
-        // before we start Strongback...
-        Strongback.dataRecorder()
-                .register("Battery Volts", 1000, battery::getVoltage)
-                .register("Current load", 1000, current::getCurrent)
-                .register("Drive Speed", driveSpeed::read)
-                .register("Turn Speed", turnSpeed::read);
-    }
+     }
 
     @Override
     public void autonomousInit() {

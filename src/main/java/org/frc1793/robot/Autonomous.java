@@ -1,6 +1,6 @@
 package org.frc1793.robot;
 
-import org.frc1793.robot.commands.drive.TimedDriveCommand;
+import org.frc1793.robot.commands.drive.DriveUtils;
 import org.strongback.Strongback;
 import org.strongback.command.Command;
 import org.strongback.command.CommandGroup;
@@ -18,57 +18,58 @@ public class Autonomous {
         this.drive = drive;
     }
 
-    public Command drive(double time, double driveSpeed, double turnSpeed) {
-        return new TimedDriveCommand(drive, driveSpeed, turnSpeed, false, time);
+    @SuppressWarnings("unused")
+    public enum EnumAuto {
+        FORWARD(DriveUtils.drive(2.0, 1, 0)),
+        FORWARD_LEFT(),
+        FORWARD_RIGHT(),
+        BACKWARD(DriveUtils.drive(1.1, -0.5, 0)),
+        BACKWARD_LEFT(
+                DriveUtils.drive(0.25, -1, 0),
+                DriveUtils.drive(0.25, 0, 0.6),
+                DriveUtils.drive(0.80, -1, 0),
+                DriveUtils.drive(0.25, 0, -0.6)
+        ),
+        BACKWARD_RIGHT(
+                DriveUtils.drive(0.25, -1, 0),
+                DriveUtils.drive(0.25, 0, -0.6),
+                DriveUtils.drive(0.80, -1, 0),
+                DriveUtils.drive(0.25, 0, 0.6)
+        ),
+        FALLBACK(Command.create(() -> Strongback.logger().error("AUTONOMOUS MODE NOT SELECTED, FAILING")));
+        public static final EnumAuto[] VALUES = values();
+        private Command command;
+
+        EnumAuto() {
+        }
+
+        EnumAuto(Command command) {
+            this.command = command;
+        }
+
+        EnumAuto(Command... sequentially) {
+            this.command = CommandGroup.runSequentially(sequentially);
+        }
+
+        public Command getCommand() {
+            return command;
+        }
+
+        public String getName() {
+            return this.name().toLowerCase();
+        }
+
+        public static EnumAuto fromName(String name) {
+            for (EnumAuto e : VALUES) {
+                if (name.equalsIgnoreCase(e.getName()))
+                    return e;
+            }
+            return FALLBACK;
+        }
     }
 
     public void init() {
-
-        Command command = null;
-        switch (Config.EnumAuto.fromName(Config.autonomous.get())) {
-
-            case FORWARD:
-                command = drive(2.0, 1, 0);
-                break;
-            case FORWARD_LEFT:
-                command = CommandGroup.runSequentially(
-                        drive(0.5, 0.5, 0),
-                        drive(0.5, 0.5, -1),
-                        drive(0.5, 0.5, 0),
-                        drive(0.5, 0.5, 1),
-                        drive(0.5, 0.5, 0)
-                );
-
-                break;
-            case FORWARD_RIGHT:
-                CommandGroup.runSequentially(
-                        drive(0.5, 0.5, 0),
-                        drive(0.5, 0.5, 1),
-                        drive(0.5, 0.5, 0),
-                        drive(0.5, 0.5, -1),
-                        drive(0.5, 0.5, 0)
-                );
-                break;
-            case BACKWARD:
-                command = drive(1.1, -0.5, 0);
-                break;
-            case BACKWARD_LEFT:
-                command = CommandGroup.runSequentially(
-                        drive(0.25, -1, 0),
-                        Command.pause(1),
-                        drive(0.25, 0, 0.6),
-                        Command.pause(1),
-                        drive(0.80, -1, 0),
-                        drive(0.25, 0, 0.6)
-                );
-                break;
-            case BACKWARD_RIGHT:
-                break;
-            case FALLBACK:
-                command = Command.create(() -> Strongback.logger().error("AUTONOMOUS MODE NOT SELECTED, FAILING"));
-                break;
-        }
-        Strongback.submit(command);
+        Strongback.submit(EnumAuto.fromName(Config.autonomous.get()).getCommand());
     }
 
 }
