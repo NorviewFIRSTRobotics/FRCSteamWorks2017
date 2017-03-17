@@ -1,6 +1,8 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import org.strongback.command.Command;
 
 import java.util.StringJoiner;
 import java.util.function.BooleanSupplier;
@@ -44,11 +46,10 @@ public class Config {
     public static BooleanSupplier isControllerDrive;
 
     public static DoubleSupplier rightShooterInitialSpeed, leftShooterInitialSpeed;
+    public static Supplier<String> autonomous;
 
-    public static Supplier<EnumAuto> autonomous;
     public static void init() {
-
-        autonomous = autoConfig();
+        autonomous = config("autonomous",EnumAuto.BACKWARD.getName());
         isControllerDrive = config("isControllerDrive", false);
         autonomousDriveTime = config("autonomousDriveTime", 0.5);
 
@@ -63,7 +64,7 @@ public class Config {
     }
 
     public static void update() {
-        autonomous = autoConfig();
+
         isControllerDrive = config("isControllerDrive", false);
         proportional = config("p", 0.0);
         integral = config("i", 0.0);
@@ -82,21 +83,11 @@ public class Config {
         return () -> Preferences.getInstance().getDouble(key, defaultVal);
     }
 
-    public static IntSupplier config(String key, int defaultVal) {
-        if (!Preferences.getInstance().containsKey(key))
-            Preferences.getInstance().putInt(key, defaultVal);
-        return () -> Preferences.getInstance().getInt(key, defaultVal);
-    }
-
     public static Supplier<String> config(String key, String defaultVal) {
-        if (!Preferences.getInstance().containsKey(key))
-            Preferences.getInstance().putString(key, defaultVal);
-        return () -> Preferences.getInstance().getString(key, defaultVal);
-    }
-
-
-    public static Supplier<EnumAuto> autoConfig() {
-        return () -> EnumAuto.fromName(config("autonomous",EnumAuto.BACKWARD.getName()).get());
+        if(!Preferences.getInstance().containsKey(key)) {
+            Preferences.getInstance().putString(key,defaultVal);
+        }
+        return () -> Preferences.getInstance().getString(key,defaultVal);
     }
 }
 

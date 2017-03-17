@@ -25,7 +25,7 @@ public class Autonomous {
     public void init() {
 
         Command command = null;
-        switch (Config.autonomous.get()) {
+        switch (Config.EnumAuto.fromName(Config.autonomous.get())) {
 
             case FORWARD:
                 command = drive(2.0, 1, 0);
@@ -50,8 +50,17 @@ public class Autonomous {
                 );
                 break;
             case BACKWARD:
+                command = drive(1.1, -0.5, 0);
                 break;
             case BACKWARD_LEFT:
+                command = CommandGroup.runSequentially(
+                        drive(0.25, -1, 0),
+                        Command.pause(1),
+                        drive(0.25, 0, 0.6),
+                        Command.pause(1),
+                        drive(0.80, -1, 0),
+                        drive(0.25, 0, 0.6)
+                );
                 break;
             case BACKWARD_RIGHT:
                 break;
@@ -63,3 +72,4 @@ public class Autonomous {
     }
 
 }
+
