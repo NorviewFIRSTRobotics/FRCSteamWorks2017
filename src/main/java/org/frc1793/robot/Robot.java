@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.commands.agitator.AgitateStartCommand;
 import org.frc1793.robot.commands.agitator.AgitateStopCommand;
-import org.frc1793.robot.commands.drive.DriveUtils;
+import org.frc1793.robot.commands.drive.TimedDriveCommand;
 import org.frc1793.robot.commands.firing.ContinuousFireCommand;
 import org.frc1793.robot.commands.firing.DisableFireCommand;
 import org.frc1793.robot.commands.sweeper.SweeperStartCommand;
@@ -63,7 +63,6 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
         Strongback.configure().recordNoEvents().setLogLevel(Logger.Level.DEBUG);
         Config.init();
-        DriveUtils.init(drive);
 
         this.battery = Hardware.powerPanel().getVoltageSensor();
         this.current = Hardware.powerPanel().getTotalCurrentSensor();
@@ -73,25 +72,33 @@ public class Robot extends IterativeRobot {
         this.drive = new TankDrive(left, right);
 
         //hallo from bee! :3
-        this.leftShooter = new Shooter(Hardware.Controllers.talonController(0, 1, 1));
-        this.rightShooter = new Shooter(Hardware.Controllers.talonController(1, 1, 1));
-        this.sweeper = new Sweeper(Hardware.Motors.spark(4));
+//        this.leftShooter = new Shooter(Hardware.Controllers.talonController(0, 1, 1));
+//        this.rightShooter = new Shooter(Hardware.Controllers.talonController(1, 1, 1));
+        this.sweeper = new Sweeper(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
+
         this.agitators = new HopperAgitators(Hardware.Motors.victor(5));
         this.driverCamera = new DriverCamera();
-        this.vision = new Vision();
+//        this.vision = new Vision();
 
         this.autonomous = new Autonomous(drive);
 
         this.position = new PositionCalculator(Hardware.Accelerometers.builtIn());
 
         this.initializeHumanInteraction();
-     }
+    }
 
     @Override
     public void autonomousInit() {
+        Strongback.disable();
         Strongback.start();
         Config.update();
-        autonomous.init();
+        try {
+            autonomous.init();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        Strongback.submit(new TimedDriveCommand(this.drive, -0.75, 0, false, 0.9));
     }
 
     @Override
@@ -110,7 +117,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        vision.run();
+//        vision.run();
         drive.arcade(driveSpeed.read(), turnSpeed.read());
     }
 
@@ -138,35 +145,38 @@ public class Robot extends IterativeRobot {
             turnSpeed = driveStick.getYaw().invert().map(Utils::finesseControl);
         }
 
-        sweeperSpeed = controller.getRightY(); //.map(this::finesseControl);
-        agitatorSpeed = driveStick.getThrottle().map(n -> (n + 1) / 2);
+        sweeperSpeed = controller.getRightY();
+        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper,sweeperSpeed), new SweeperStopCommand(sweeper))::run);
 
-        rightShooterSpeed = new SettableRange(0, 1, Config.rightShooterInitialSpeed.getAsDouble());
-        leftShooterSpeed = new SettableRange(0, 1, Config.leftShooterInitialSpeed.getAsDouble());
+//        agitatorSpeed = () -> 0.5;
 
-        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);
-        reactor.onTriggered(controller.getX(), new SwitchToggle(new AgitateStartCommand(agitators, agitatorSpeed), new AgitateStopCommand(agitators))::run);
+//        rightShooterSpeed = new SettableRange(0, 1, Config.rightShooterInitialSpeed.getAsDouble());
+//        leftShooterSpeed = new SettableRange(0, 1, Config.leftShooterInitialSpeed.getAsDouble());
 
-        reactor.onTriggered(controller.getButton(9), new SwitchToggle(new ContinuousFireCommand(leftShooter, leftShooterSpeed), new DisableFireCommand(leftShooter))::run);
-        reactor.onTriggered(controller.getButton(10), new SwitchToggle(new ContinuousFireCommand(rightShooter, rightShooterSpeed.invert()), new DisableFireCommand(rightShooter))::run);
+//        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);
+//        reactor.onTriggered(controller.getX(), new SwitchToggle(new AgitateStartCommand(agitators, agitatorSpeed), new AgitateStopCommand(agitators))::run);
 
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 270), () -> {
-            rightShooterSpeed.increment(0.01);
-            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
-        });
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 90), () -> {
-            rightShooterSpeed.decrement(00.01);
-            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
-        });
+//        reactor.onTriggered(controller.getButton(9), new SwitchToggle(new ContinuousFireCommand(leftShooter, leftShooterSpeed), new DisableFireCommand(leftShooter))::run);
+//        reactor.onTriggered(controller.getButton(10), new SwitchToggle(new ContinuousFireCommand(rightShooter, rightShooterSpeed.invert()), new DisableFireCommand(rightShooter))::run);
+//
+//        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 270), () -> {
+//            rightShooterSpeed.increment(0.01);
+//            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
+//        });
+//        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 90), () -> {
+//            rightShooterSpeed.decrement(00.01);
+//            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
+//        });
+//
+//        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 0), () -> {
+//            leftShooterSpeed.increment(0.01);
+//            SmartDashboard.putNumber("left shooter speed", leftShooterSpeed.read() * 100);
+//        });
+//        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 180), () -> {
+//            leftShooterSpeed.decrement(0.01);
+//            SmartDashboard.putNumber("left shooter speed", leftShooterSpeed.read() * 100);
+//        });
 
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 0), () -> {
-            leftShooterSpeed.increment(0.01);
-            SmartDashboard.putNumber("left shooter speed", leftShooterSpeed.read() * 100);
-        });
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 180), () -> {
-            leftShooterSpeed.decrement(0.01);
-            SmartDashboard.putNumber("left shooter speed", leftShooterSpeed.read() * 100);
-        });
     }
 
 }

@@ -1,10 +1,13 @@
 package org.frc1793.robot.components.vision;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.vision.VisionThread;
+import org.frc1793.robot.Config;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.AlignExposures;
 
 /**
  * Created by melvin on 1/26/2017.
@@ -14,13 +17,19 @@ import org.opencv.imgproc.Imgproc;
 public class DriverCamera {
 
     private static final int IMG_HEIGHT = 120, IMG_WIDTH = 160;
-
     public DriverCamera() {
-        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-        camera.setFPS(30);
-        if(!camera.isConnected())
-            camera.free();
+        if(Config.isCameraEnabled.getAsBoolean()) {
+            camera0();
+        }
+    }
+
+    public void camera0() {
+        UsbCamera camera0 = null;
+        if (camera0 == null) {
+            camera0 = CameraServer.getInstance().startAutomaticCapture();
+//            camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+            camera0.setFPS(30);
+        }
     }
 
 }

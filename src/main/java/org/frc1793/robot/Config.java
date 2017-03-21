@@ -21,10 +21,12 @@ public class Config {
     public static BooleanSupplier isControllerDrive;
 
     public static DoubleSupplier rightShooterInitialSpeed, leftShooterInitialSpeed;
-    public static Supplier<String> autonomous;
+//    public static Supplier<String> autonomous;
 
+    public static BooleanSupplier isCameraEnabled;
     public static void init() {
-        autonomous = config("autonomous", Autonomous.EnumAuto.BACKWARD.getName());
+//        autonomous = config("autonomous", Autonomous.EnumAuto.BACKWARD.getName());
+        isCameraEnabled = config("isCameraEnabled",false);
         isControllerDrive = config("isControllerDrive", false);
         autonomousDriveTime = config("autonomousDriveTime", 0.5);
 
