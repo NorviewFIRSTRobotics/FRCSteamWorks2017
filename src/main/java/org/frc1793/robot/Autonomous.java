@@ -38,8 +38,8 @@ public class Autonomous {
 
     public enum EnumAuto {
         BACKWARDS(drive(0.9, -0.75, 0)),
-        LEFT_GEAR(drive(0.9, 0.75, 0),
-                drive(0.9, 0.75, 0)),
+        LEFT_GEAR(drive(0.9, -0.75, 0),
+                drive(0.1, 0.75, 0)),
         RIGHT_GEAR(),
         SHOOTING();
 

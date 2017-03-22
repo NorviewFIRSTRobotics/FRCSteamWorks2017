@@ -53,7 +53,6 @@ public class TimedDriveCommand extends Command {
 
     @Override
     public boolean execute() {
-        System.out.println(driveSpeed);
         drive.arcade(driveSpeed, turnSpeed, squareInputs);
         return false;   // not complete; it will duration out automatically
     }
