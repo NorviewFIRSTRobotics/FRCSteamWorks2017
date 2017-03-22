@@ -38,7 +38,7 @@ public class AimPitchCommandTest {
         tester = new CommandTester(new AimPitchCommand(90,motor, SPEED, angleSensor));
         Assertions.assertThat(motor.getSpeed()).isEqualTo(0,TOLERANCE);
 
-        // Start the command with the given artificial start time ...
+        // Start the command with the given artificial start duration ...
         tester.step(START_TIME_MS);
 
         //Set current angle for launcher to 0

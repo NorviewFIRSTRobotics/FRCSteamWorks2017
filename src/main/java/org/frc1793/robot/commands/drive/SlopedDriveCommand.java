@@ -21,7 +21,7 @@ public class SlopedDriveCommand extends TimedDriveCommand {
     private double maxDriveSpeed;
     private double slope;
     public SlopedDriveCommand(TankDrive drive, double maxDriveSpeed, double turnSpeed, boolean squareInputs, double duration) {
-        super(drive, maxDriveSpeed, turnSpeed, squareInputs, duration);
+        super(drive, duration,maxDriveSpeed, turnSpeed, squareInputs);
         this.maxDriveSpeed = maxDriveSpeed;
         this.slope = maxDriveSpeed/duration;
     }

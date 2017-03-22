@@ -43,7 +43,7 @@ public class AimYawCommandTest {
         Assertions.assertThat(leftMotor.getSpeed()).isEqualTo(0,TOLERANCE);
         Assertions.assertThat(rightMotor.getSpeed()).isEqualTo(0,TOLERANCE);
 
-        // Start the command with the given artificial start time ...
+        // Start the command with the given artificial start duration ...
         tester.step(START_TIME_MS);
 
         //Set angle to 0, less than target

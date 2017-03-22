@@ -2,12 +2,6 @@ package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.frc1793.robot.commands.agitator.AgitateStartCommand;
-import org.frc1793.robot.commands.agitator.AgitateStopCommand;
-import org.frc1793.robot.commands.drive.TimedDriveCommand;
-import org.frc1793.robot.commands.firing.ContinuousFireCommand;
-import org.frc1793.robot.commands.firing.DisableFireCommand;
 import org.frc1793.robot.commands.sweeper.SweeperStartCommand;
 import org.frc1793.robot.commands.sweeper.SweeperStopCommand;
 import org.frc1793.robot.components.HopperAgitators;
@@ -32,7 +26,8 @@ import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 
 import static org.frc1793.robot.Config.isControllerDrive;
-import static org.frc1793.robot.utils.Utils.*;
+import static org.frc1793.robot.utils.Utils.logitechDualAction;
+import static org.frc1793.robot.utils.Utils.microsoftSideWinder;
 
 @SuppressWarnings("ALL")
 public class Robot extends IterativeRobot {
@@ -92,13 +87,9 @@ public class Robot extends IterativeRobot {
         Strongback.disable();
         Strongback.start();
         Config.update();
-        try {
-            autonomous.init();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
 
-        Strongback.submit(new TimedDriveCommand(this.drive, -0.75, 0, false, 0.9));
+        autonomous.init();
+//        Strongback.submit(new TimedDriveCommand(this.drive, 0.9,-0.75, 0));
     }
 
     @Override

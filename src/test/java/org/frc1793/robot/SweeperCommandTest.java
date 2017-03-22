@@ -42,10 +42,10 @@ public class SweeperCommandTest {
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
 
-        // Start the command with the given artificial start time ...
+        // Start the command with the given artificial start duration ...
         tester.step(START_TIME_MS);
 
-        // Start the command and simulate time advancing almost 2 seconds ...
+        // Start the command and simulate duration advancing almost 2 seconds ...
         tester.step(START_TIME_MS + 1999);
         assertThat(left.getSpeed()).isEqualTo(1.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(-1.0, TOLERANCE);
@@ -58,7 +58,7 @@ public class SweeperCommandTest {
         left.setSpeed(1);
         right.setSpeed(-1);
         assertThat(left.getSpeed()).isEqualTo(1.0,TOLERANCE);
-        assertThat(left.getSpeed()).isEqualTo(-1.0,TOLERANCE);
+        assertThat(right.getSpeed()).isEqualTo(-1.0,TOLERANCE);
 
         //progress stop command, motor should stop
         tester.step(START_TIME_MS);
@@ -83,15 +83,15 @@ public class SweeperCommandTest {
         tester = new CommandTester(new SweeperStartCommand(sweeper));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
-        // Start the command with the given artificial start time ...
+        // Start the command with the given artificial start duration ...
         tester.step(START_TIME_MS);
 
-        // Start the command and simulate time advancing almost 2 seconds ...
+        // Start the command and simulate duration advancing almost 2 seconds ...
         tester.step(START_TIME_MS + 1999);
         assertThat(left.getSpeed()).isEqualTo(1, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(-1, TOLERANCE);
 
-        // Cancel the command, which should interrupt the command and advance the time ...
+        // Cancel the command, which should interrupt the command and advance the duration ...
         tester.cancel();
         tester.step(START_TIME_MS + 1);
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);

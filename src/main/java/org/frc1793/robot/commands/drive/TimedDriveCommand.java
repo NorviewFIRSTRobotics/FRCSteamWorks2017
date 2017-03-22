@@ -29,7 +29,7 @@ public class TimedDriveCommand extends Command {
     protected double driveSpeed;
     protected double turnSpeed;
     protected final boolean squareInputs;
-
+    protected final double duration;
     /**
      * Create a new autonomous command.
      * @param drive the chassis
@@ -38,18 +38,24 @@ public class TimedDriveCommand extends Command {
      * @param squareInputs whether to increase sensitivity at low speeds
      * @param duration the duration of this command; should be positive
      */
-    public TimedDriveCommand( TankDrive drive, double driveSpeed, double turnSpeed, boolean squareInputs, double duration ) {
+    public TimedDriveCommand( TankDrive drive, double duration ,double driveSpeed, double turnSpeed, boolean squareInputs) {
         super(duration, drive);
         this.drive = drive;
         this.driveSpeed = driveSpeed;
         this.turnSpeed = turnSpeed;
         this.squareInputs = squareInputs;
+        this.duration = duration;
+    }
+
+    public TimedDriveCommand(TankDrive drive, double duration, double driveSpeed, double turnSpeed) {
+        this(drive,duration,driveSpeed,turnSpeed,false);
     }
 
     @Override
     public boolean execute() {
+        System.out.println(driveSpeed);
         drive.arcade(driveSpeed, turnSpeed, squareInputs);
-        return false;   // not complete; it will time out automatically
+        return false;   // not complete; it will duration out automatically
     }
 
     @Override
@@ -62,4 +68,8 @@ public class TimedDriveCommand extends Command {
         drive.stop();
     }
 
+    @Override
+    public String toString() {
+        return String.format("Drive > %s, Turn >  %s, Duration > %s", driveSpeed,turnSpeed,duration);
+    }
 }

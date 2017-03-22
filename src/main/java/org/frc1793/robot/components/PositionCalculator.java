@@ -36,10 +36,6 @@ public class PositionCalculator implements DistanceSensor {
         velocity.integrate(new DoubleVector(a.getX(),a.getY(),a.getZ()), deltaVector);
 
         position.integrate(velocity.getValue(), deltaVector);
-        System.out.println(deltaVector);
-        System.out.println(a);
-        System.out.println(velocity.getValue());
-        System.out.println(position.getValue());
     }
 
 

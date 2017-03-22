@@ -6,6 +6,8 @@ import org.strongback.command.Command;
 import org.strongback.command.CommandGroup;
 import org.strongback.drive.TankDrive;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 
@@ -13,61 +15,58 @@ import java.util.function.Supplier;
  * Created by melvin on 3/13/2017.
  */
 public class Autonomous {
-    public static Supplier<TankDrive> driveSupplier;
+    public static TankDrive drive;
 
-    public static TimedDriveCommand drive(double time, double speed, double turn) {
-        return new TimedDriveCommand(driveSupplier.get(), speed, turn, false, time);
+
+    public static Supplier<Command> drive(double time, double speed, double turn) {
+        return () -> new TimedDriveCommand(drive, time, speed, turn);
     }
-
-    public TankDrive drive;
 
     public Autonomous(TankDrive drive) {
         this.drive = drive;
-        driveSupplier = () -> drive;
-    }
-
-    @SuppressWarnings("unused")
-    public enum EnumAuto {
-        BACKWARD(drive(1.1, -0.5, 0)),
-        BACKWARD_LEFT(
-                drive(0.25, -1, 0),
-                drive(0.25, 0, 0.6),
-                drive(0.80, -1, 0),
-                drive(0.25, 0, -0.6)
-        ),
-        BACKWARD_RIGHT(
-                drive(0.25, -1, 0),
-                drive(0.25, 0, -0.6),
-                drive(0.80, -1, 0),
-                drive(0.25, 0, 0.6)
-        ),
-        FALLBACK();
-        public static final EnumAuto[] VALUES = values();
-
-        private Command command;
-
-        EnumAuto(Command command) {
-            this.command = command;
-        }
-        EnumAuto(Command... commands) {
-            CommandGroup.runSequentially(commands);
-        }
-        public String getName() {
-            return this.name().toLowerCase();
-        }
-
-        public static EnumAuto fromName(String name) {
-            for (EnumAuto e : VALUES) {
-                if (name.equalsIgnoreCase(e.getName()))
-                    return e;
-            }
-            return FALLBACK;
-        }
     }
 
     public void init() {
+        Strongback.submit(EnumAuto.BACKWARDS.getCommand());
+    }
 
-        System.out.println(EnumAuto.BACKWARD.command);
+    public static TankDrive getDrive() {
+        return drive;
+    }
+
+
+
+    public enum EnumAuto {
+        BACKWARDS(drive(0.9, -0.75, 0)),
+        LEFT_GEAR(drive(0.9, 0.75, 0),
+                drive(0.9, 0.75, 0)),
+        RIGHT_GEAR(),
+        SHOOTING();
+
+        private Supplier<Command> command;
+        private List<Supplier<Command>> commands;
+        EnumAuto() {
+            this.command = null;
+        }
+
+        EnumAuto(Supplier<Command> command) {
+            this.command = command;
+        }
+        EnumAuto(Supplier<Command>... commands) {
+            this.commands = Arrays.asList(commands);
+        }
+
+        public Command getCommand() {
+            if(commands != null) {
+                Command[] array = commands.stream().map(Supplier::get).toArray(Command[]::new);
+                for(Command command: array) {
+                    System.out.println(command);
+                }
+                return CommandGroup.runSequentially(array);
+            } else {
+                return command.get();
+            }
+        }
     }
 
 }

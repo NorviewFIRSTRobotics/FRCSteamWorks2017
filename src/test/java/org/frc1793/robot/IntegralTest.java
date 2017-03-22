@@ -72,7 +72,7 @@ public class IntegralTest {
             clock.incrementBySeconds(1);
             ((MockAccelerometer) accelerometer.getDirection(0)).setAcceleration(0);
             positionCalculator.calculatePosition();
-            System.out.println(positionCalculator.getDistanceInFeet());
+//            System.out.println(positionCalculator.getDistanceInFeet());
         }
     }
 }
