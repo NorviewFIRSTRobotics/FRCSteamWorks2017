@@ -40,7 +40,7 @@ public class AutoTest {
 
     @Test
     public void shouldGoBackwards() {
-        tester = new CommandTester(Autonomous.EnumAuto.BACKWARDS.getCommand());
+        tester = new CommandTester(Autonomous.EnumAuto.CENTER.getCommand());
         assertThat(leftMotor.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(rightMotor.getSpeed()).isEqualTo(0.0, TOLERANCE);
 

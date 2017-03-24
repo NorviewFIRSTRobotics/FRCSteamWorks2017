@@ -17,19 +17,15 @@ import org.opencv.photo.AlignExposures;
 public class DriverCamera {
 
     private static final int IMG_HEIGHT = 120, IMG_WIDTH = 160;
+
     public DriverCamera() {
-        if(Config.isCameraEnabled.getAsBoolean()) {
-            camera0();
-        }
+        camera0();
     }
 
     public void camera0() {
-        UsbCamera camera0 = null;
-        if (camera0 == null) {
-            camera0 = CameraServer.getInstance().startAutomaticCapture();
-//            camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
-            camera0.setFPS(30);
-        }
+        UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture();
+        camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+        camera0.setFPS(30);
     }
 
 }

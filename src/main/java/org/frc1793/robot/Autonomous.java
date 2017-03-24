@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 public class Autonomous {
     public static TankDrive drive;
 
-
     public static Supplier<Command> drive(double time, double speed, double turn) {
         return () -> new TimedDriveCommand(drive, time, speed, turn);
     }
@@ -27,20 +26,17 @@ public class Autonomous {
     }
 
     public void init() {
-        Strongback.submit(EnumAuto.BACKWARDS.getCommand());
+        Strongback.submit(EnumAuto.valueOf(Config.autonomous.get()).getCommand());
     }
-
-    public static TankDrive getDrive() {
-        return drive;
-    }
-
-
 
     public enum EnumAuto {
-        BACKWARDS(drive(0.9, -0.75, 0)),
-        LEFT_GEAR(drive(0.9, -0.75, 0),
-                drive(0.1, 0.75, 0)),
-        RIGHT_GEAR(),
+        CENTER(drive(0.9, -0.75, 0)),
+        RIGHT(drive(0.9, -0.75, 0),
+                drive(0.4, 0, 0.5),
+                drive(0.2, -0.5, 0)),
+        LEFT(drive(0.9, -0.75, 0),
+                drive(0.4, 0, -0.5),
+                drive(0.2, -0.5, 0)),
         SHOOTING();
 
         private Supplier<Command> command;

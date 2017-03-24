@@ -137,12 +137,15 @@ public class Robot extends IterativeRobot {
         }
 
         sweeperSpeed = controller.getRightY();
-        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper,sweeperSpeed), new SweeperStopCommand(sweeper))::run);
+        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);
 
-//        agitatorSpeed = () -> 0.5;
 
-//        rightShooterSpeed = new SettableRange(0, 1, Config.rightShooterInitialSpeed.getAsDouble());
-//        leftShooterSpeed = new SettableRange(0, 1, Config.leftShooterInitialSpeed.getAsDouble());
+
+//        reactor.onTriggeredSubmit(driveStick.getTrigger(), () -> new TimedDriveCommand(drive, Config.turnTime.getAsDouble(), 0, Config.turnSpeed.getAsDouble()));
+        //        agitatorSpeed = () -> 0.5;
+
+        rightShooterSpeed = new SettableRange(0, 1, Config.rightShooterInitialSpeed.getAsDouble());
+        leftShooterSpeed = new SettableRange(0, 1, Config.leftShooterInitialSpeed.getAsDouble());
 
 //        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);
 //        reactor.onTriggered(controller.getX(), new SwitchToggle(new AgitateStartCommand(agitators, agitatorSpeed), new AgitateStopCommand(agitators))::run);

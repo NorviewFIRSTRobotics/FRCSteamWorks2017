@@ -1,10 +1,9 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Purpose:
@@ -14,53 +13,72 @@ import java.util.function.Supplier;
  */
 public class Config {
 
-    public static DoubleSupplier proportional, integral, differential;
-    public static DoubleSupplier autonomousDriveTime;
-    public static BooleanSupplier isControllerDrive;
+    public static ConfigOption<Double> autonomousDriveTime;
+    public static ConfigOption<Double> turnTime, turnSpeed;
+    public static ConfigOption<Boolean> isControllerDrive;
 
-    public static DoubleSupplier rightShooterInitialSpeed, leftShooterInitialSpeed;
+    public static ConfigOption<Double> rightShooterInitialSpeed, leftShooterInitialSpeed;
 
-    public static BooleanSupplier isCameraEnabled;
+    public static ConfigOption<Boolean> isCameraEnabled;
+    public static ConfigOption<String> autonomous;
+
     public static void init() {
-        isCameraEnabled = config("isCameraEnabled",false);
+
+        autonomous = config("autonomous", "CENTER");
+
+        isCameraEnabled = config("isCameraEnabled", false);
         isControllerDrive = config("isControllerDrive", false);
         autonomousDriveTime = config("autonomousDriveTime", 0.5);
-
-        proportional = config("p", 0.0);
-        integral = config("i", 0.0);
-        differential = config("d", 0.0);
 
         rightShooterInitialSpeed = config("rightShooterInitialSpeed", 0.77);
         leftShooterInitialSpeed = config("leftShooterInitialSpeed", 1.0);
 
-
+        turnTime = config("turnTime", 1.0);
+        turnSpeed = config("turnSpeed", 1.0);
     }
 
     public static void update() {
 
         isControllerDrive = config("isControllerDrive", false);
-        proportional = config("p", 0.0);
-        integral = config("i", 0.0);
-        differential = config("d", 0.0);
+        rightShooterInitialSpeed = config("rightShooterInitialSpeed", 0.77);
+        leftShooterInitialSpeed = config("leftShooterInitialSpeed", 1.0);
+
     }
 
-    public static BooleanSupplier config(String key, boolean defaultVal) {
-        if (!Preferences.getInstance().containsKey(key))
-            Preferences.getInstance().putBoolean(key, defaultVal);
-        return () -> Preferences.getInstance().getBoolean(key, defaultVal);
+    public static Preferences p = Preferences.getInstance();
+
+    public static ConfigOption<Boolean> config(String key, Boolean defaultVal) {
+        return new ConfigOption<>(key, defaultVal, p::containsKey, p::putBoolean, p::getBoolean);
     }
 
-    public static DoubleSupplier config(String key, double defaultVal) {
-        if (!Preferences.getInstance().containsKey(key))
-            Preferences.getInstance().putDouble(key, defaultVal);
-        return () -> Preferences.getInstance().getDouble(key, defaultVal);
+    public static ConfigOption<Double> config(String key, Double defaultVal) {
+        return new ConfigOption<>(key, defaultVal, p::containsKey, p::putDouble, p::getDouble);
     }
 
-    public static Supplier<String> config(String key, String defaultVal) {
-        if(!Preferences.getInstance().containsKey(key)) {
-            Preferences.getInstance().putString(key,defaultVal);
+    public static ConfigOption<String> config(String key, String defaultVal) {
+        Preferences p = Preferences.getInstance();
+        return new ConfigOption<>(key, defaultVal, p::containsKey, p::putString, p::getString);
+    }
+
+
+    public static class ConfigOption<T> implements Supplier<T> {
+        private String key;
+        private T defaultVal;
+
+        private BiFunction<String, T, T> getDashboard;
+
+        public ConfigOption(String key, T defaultVal, Predicate<String> contains, BiConsumer<String, T> setDashboard, BiFunction<String, T, T> getDashboard) {
+            this.key = key;
+            this.defaultVal = defaultVal;
+            this.getDashboard = getDashboard;
+            if (!contains.test(key))
+                setDashboard.accept(key, this.defaultVal);
         }
-        return () -> Preferences.getInstance().getString(key,defaultVal);
+
+        @Override
+        public T get() {
+            return this.getDashboard.apply(key, defaultVal);
+        }
     }
 }
 
