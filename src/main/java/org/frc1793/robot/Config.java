@@ -1,7 +1,7 @@
 package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import java.util.function.*;
 
@@ -13,36 +13,38 @@ import java.util.function.*;
  */
 public class Config {
 
-    public static ConfigOption<Double> autonomousDriveTime;
-    public static ConfigOption<Double> turnTime, turnSpeed;
     public static ConfigOption<Boolean> isControllerDrive;
-
-    public static ConfigOption<Double> rightShooterInitialSpeed, leftShooterInitialSpeed;
-
-    public static ConfigOption<Boolean> isCameraEnabled;
+    public static ConfigOption<Double> shooterInitialSpeed;
     public static ConfigOption<String> autonomous;
+
+    public static ConfigOption<Double> agitatorSpeed;
+
+    //    public static ConfigOption<Double> autonomousDriveTime;
+    //    public static ConfigOption<Double> turnTime, turnSpeed;
+    //    public static ConfigOption<Boolean> isCameraEnabled;
+    public static SendableChooser<Autonomous.EnumAuto> autoSender;
 
     public static void init() {
 
+        autoSender = new SendableChooser<Autonomous.EnumAuto>();
+        autoSender.addDefault("default", Autonomous.EnumAuto.CENTER);
+        for(Autonomous.EnumAuto auto: Autonomous.EnumAuto.VALUES) {
+            autoSender.addObject(auto.name(),auto);
+        }
         autonomous = config("autonomous", "CENTER");
-
-        isCameraEnabled = config("isCameraEnabled", false);
         isControllerDrive = config("isControllerDrive", false);
-        autonomousDriveTime = config("autonomousDriveTime", 0.5);
+        shooterInitialSpeed = config("shooterInitialSpeed", 0.77);
 
-        rightShooterInitialSpeed = config("rightShooterInitialSpeed", 0.77);
-        leftShooterInitialSpeed = config("leftShooterInitialSpeed", 1.0);
-
-        turnTime = config("turnTime", 1.0);
-        turnSpeed = config("turnSpeed", 1.0);
+        agitatorSpeed = config("agitatorSpeed",0.5);
+//        isCameraEnabled = config("isCameraEnabled", false);
+//        autonomousDriveTime = config("autonomousDriveTime", 0.5);
+//        turnTime = config("turnTime", 1.0);
+//        turnSpeed = config("turnSpeed", 1.0);
     }
 
     public static void update() {
-
         isControllerDrive = config("isControllerDrive", false);
-        rightShooterInitialSpeed = config("rightShooterInitialSpeed", 0.77);
-        leftShooterInitialSpeed = config("leftShooterInitialSpeed", 1.0);
-
+        shooterInitialSpeed = config("shooterInitialSpeed", 0.77);
     }
 
     public static Preferences p = Preferences.getInstance();
@@ -66,11 +68,13 @@ public class Config {
         private T defaultVal;
 
         private BiFunction<String, T, T> getDashboard;
+        private BiConsumer<String, T> setDashboard;
 
         public ConfigOption(String key, T defaultVal, Predicate<String> contains, BiConsumer<String, T> setDashboard, BiFunction<String, T, T> getDashboard) {
             this.key = key;
             this.defaultVal = defaultVal;
             this.getDashboard = getDashboard;
+            this.setDashboard = setDashboard;
             if (!contains.test(key))
                 setDashboard.accept(key, this.defaultVal);
         }
@@ -78,6 +82,10 @@ public class Config {
         @Override
         public T get() {
             return this.getDashboard.apply(key, defaultVal);
+        }
+
+        public void put(T u) {
+            this.setDashboard.accept(key, u);
         }
     }
 }

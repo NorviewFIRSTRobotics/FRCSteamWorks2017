@@ -1,4 +1,6 @@
-package org.frc1793.robot.utils;
+package org.frc1793.robot.utils.math;
+
+import org.frc1793.robot.utils.math.Vector;
 
 /**
  * Created by melvin on 3/14/2017.

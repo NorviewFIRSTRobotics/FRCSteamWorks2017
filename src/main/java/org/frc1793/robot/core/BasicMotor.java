@@ -1,4 +1,4 @@
-package org.frc1793.robot.components;
+package org.frc1793.robot.core;
 
 import org.strongback.components.Motor;
 import org.strongback.components.ui.ContinuousRange;

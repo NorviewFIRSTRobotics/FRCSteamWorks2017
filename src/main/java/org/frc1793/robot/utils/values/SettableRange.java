@@ -1,4 +1,4 @@
-package org.frc1793.robot.utils;
+package org.frc1793.robot.utils.values;
 
 import org.strongback.components.ui.ContinuousRange;
 import org.strongback.util.Values;
@@ -17,13 +17,17 @@ public class SettableRange implements ContinuousRange {
     }
 
     public void increment(double interval) {
-        value = Values.limit(min, value + interval, max);
+        setValue(value+interval);
     }
 
     public void decrement(double interval) {
-        value = Values.limit(min, value - interval, max);
+        setValue(value-interval);
     }
 
+    public void setValue(double value) {
+        this.value = Values.limit(min, value, max);
+
+    }
     @Override
     public double read() {
         return value;

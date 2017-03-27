@@ -33,18 +33,6 @@ public class Utils {
         return y;
     }
 
-    public static double fineseSweeper(double x) {
-        double a = 0.5, b = 0.5;
-        double y;
-        if (x > 0) {
-            y = x * b + b;
-        } else {
-            y = x * b - b;
-        }
-        return y;
-    }
-
-
     public static FlightStick microsoftSideWinder(int port) {
         Joystick joystick = new Joystick(port);
         joystick.getButtonCount();

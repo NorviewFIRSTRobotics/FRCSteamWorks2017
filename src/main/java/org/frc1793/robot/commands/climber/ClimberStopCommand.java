@@ -1,6 +1,6 @@
-package org.frc1793.robot.commands.sweeper;
+package org.frc1793.robot.commands.climber;
 
-import org.frc1793.robot.components.Sweeper;
+import org.frc1793.robot.components.Climber;
 import org.strongback.command.Command;
 
 /**
@@ -9,10 +9,10 @@ import org.strongback.command.Command;
  * @author Tyler Marshall
  * @version 2/3/17
  */
-public class SweeperStopCommand extends Command {
-    private Sweeper sweeper;
+public class ClimberStopCommand extends Command {
+    private Climber sweeper;
 
-    public SweeperStopCommand(Sweeper sweeper) {
+    public ClimberStopCommand(Climber sweeper) {
         super(sweeper);
         this.sweeper = sweeper;
     }

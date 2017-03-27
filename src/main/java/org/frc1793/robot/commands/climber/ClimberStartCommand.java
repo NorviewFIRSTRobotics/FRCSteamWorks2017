@@ -1,6 +1,6 @@
-package org.frc1793.robot.commands.sweeper;
+package org.frc1793.robot.commands.climber;
 
-import org.frc1793.robot.components.Sweeper;
+import org.frc1793.robot.components.Climber;
 import org.strongback.command.Command;
 import org.strongback.components.ui.ContinuousRange;
 
@@ -10,18 +10,18 @@ import org.strongback.components.ui.ContinuousRange;
  * @author Tyler Marshall
  * @version 2/3/17
  */
-public class SweeperStartCommand extends Command {
+public class ClimberStartCommand extends Command {
 
-    private Sweeper sweeper;
+    private Climber sweeper;
     private ContinuousRange speed;
 
-    public SweeperStartCommand(Sweeper sweeper, ContinuousRange speed) {
+    public ClimberStartCommand(Climber sweeper, ContinuousRange speed) {
         super(sweeper);
         this.sweeper = sweeper;
         this.speed = speed;
     }
 
-    public SweeperStartCommand(Sweeper sweeper) {
+    public ClimberStartCommand(Climber sweeper) {
         this(sweeper, () -> 1);
     }
 

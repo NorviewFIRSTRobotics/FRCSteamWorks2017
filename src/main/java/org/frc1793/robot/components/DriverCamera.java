@@ -1,4 +1,4 @@
-package org.frc1793.robot.components.vision;
+package org.frc1793.robot.components;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoCamera;

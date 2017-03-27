@@ -1,9 +1,9 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.sweeper.SweeperStartCommand;
-import org.frc1793.robot.commands.sweeper.SweeperStopCommand;
-import org.frc1793.robot.components.Sweeper;
+import org.frc1793.robot.commands.climber.ClimberStartCommand;
+import org.frc1793.robot.commands.climber.ClimberStopCommand;
+import org.frc1793.robot.components.Climber;
 import org.frc1793.robot.mocks.MockCRange;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class SweeperCommandTest {
     private final Delta TOLERANCE = Delta.delta(0.001);
     private final long START_TIME_MS = 1000;
 
-    private Sweeper sweeper;
+    private Climber sweeper;
     private Motor left, right;
     private CommandTester tester;
 
@@ -33,12 +33,12 @@ public class SweeperCommandTest {
     public void beforeEach() {
         left = Mock.stoppedMotor();
         right = Mock.stoppedMotor();
-        sweeper = new Sweeper(left,right);
+        sweeper = new Climber(left,right);
         speed = new MockCRange();
     }
     @Test
     public void shouldContinueouslySweep() {
-        tester = new CommandTester(new SweeperStartCommand(sweeper));
+        tester = new CommandTester(new ClimberStartCommand(sweeper));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
 
@@ -52,7 +52,7 @@ public class SweeperCommandTest {
     }
     @Test
     public void shouldStopWhenStopped() {
-        tester = new CommandTester(new SweeperStopCommand(sweeper));
+        tester = new CommandTester(new ClimberStopCommand(sweeper));
 
         //Motor is running at full speed;
         left.setSpeed(1);
@@ -69,7 +69,7 @@ public class SweeperCommandTest {
 
     @Test
     public void shouldChangeSpeedWhenChanged() {
-        tester = new CommandTester(new SweeperStartCommand(sweeper,speed));
+        tester = new CommandTester(new ClimberStartCommand(sweeper,speed));
 
         for(double i = 0; i < 1; i+=0.2) {
             speed.setValue(i);
@@ -80,7 +80,7 @@ public class SweeperCommandTest {
     }
     @Test
     public void shouldStopWhenCancelled() {
-        tester = new CommandTester(new SweeperStartCommand(sweeper));
+        tester = new CommandTester(new ClimberStartCommand(sweeper));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);
         // Start the command with the given artificial start duration ...

@@ -10,10 +10,10 @@ import org.strongback.components.ui.ContinuousRange;
  * @author Tyler Marshall
  * @version 2/3/17
  */
-public class Sweeper implements Requirable {
+public class Climber implements Requirable {
     private Motor left, right;
 
-    public Sweeper(Motor left, Motor right) {
+    public Climber(Motor left, Motor right) {
         this.left = left;
         this.right = right;
     }

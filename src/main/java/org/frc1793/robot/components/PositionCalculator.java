@@ -1,7 +1,7 @@
 package org.frc1793.robot.components;
 
-import org.frc1793.robot.utils.DoubleVector;
-import org.frc1793.robot.utils.DoubleVectorIntegral;
+import org.frc1793.robot.utils.math.DoubleVector;
+import org.frc1793.robot.utils.math.DoubleVectorIntegral;
 import org.strongback.Strongback;
 import org.strongback.components.Clock;
 import org.strongback.components.DistanceSensor;

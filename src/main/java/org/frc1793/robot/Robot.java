@@ -7,16 +7,13 @@ import org.frc1793.robot.commands.agitator.AgitateStartCommand;
 import org.frc1793.robot.commands.agitator.AgitateStopCommand;
 import org.frc1793.robot.commands.firing.ContinuousFireCommand;
 import org.frc1793.robot.commands.firing.DisableFireCommand;
-import org.frc1793.robot.commands.sweeper.SweeperStartCommand;
-import org.frc1793.robot.commands.sweeper.SweeperStopCommand;
-import org.frc1793.robot.components.HopperAgitators;
+import org.frc1793.robot.commands.climber.ClimberStartCommand;
+import org.frc1793.robot.commands.climber.ClimberStopCommand;
 import org.frc1793.robot.components.PositionCalculator;
-import org.frc1793.robot.components.Shooter;
-import org.frc1793.robot.components.Sweeper;
-import org.frc1793.robot.components.vision.DriverCamera;
-import org.frc1793.robot.components.vision.Vision;
-import org.frc1793.robot.utils.SettableRange;
-import org.frc1793.robot.utils.SwitchToggle;
+import org.frc1793.robot.components.Climber;
+import org.frc1793.robot.components.DriverCamera;
+import org.frc1793.robot.utils.values.ConfigRange;
+import org.frc1793.robot.utils.values.SwitchToggle;
 import org.frc1793.robot.utils.Utils;
 import org.strongback.Logger;
 import org.strongback.Strongback;
@@ -31,31 +28,27 @@ import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 
 import static org.frc1793.robot.Config.isControllerDrive;
-import static org.frc1793.robot.utils.Utils.logitechDualAction;
-import static org.frc1793.robot.utils.Utils.microsoftSideWinder;
-import static org.frc1793.robot.utils.Utils.switchFromDpad;
+import static org.frc1793.robot.utils.Utils.*;
 
 @SuppressWarnings("ALL")
 public class Robot extends IterativeRobot {
 
-
     private TankDrive drive;
     private Shooter rightShooter;
     private HopperAgitators agitators;
-    private Sweeper sweeper;
+    private Climber sweeper;
     private DriverCamera driverCamera;
-    private Vision vision;
     private PositionCalculator position;
     private CurrentSensor current;
     private VoltageSensor battery;
     private Autonomous autonomous;
 
-    private SettableRange rightShooterSpeed;
+    private ConfigRange shooterSpeed;
+    private ConfigRange agitatorSpeed;
+
+    private ContinuousRange climberSpeed;
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
-    private ContinuousRange sweeperSpeed;
-    private ContinuousRange agitatorSpeed;
-
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().setLogLevel(Logger.Level.DEBUG);
@@ -70,7 +63,7 @@ public class Robot extends IterativeRobot {
         //hallo from bee! :3
         this.rightShooter = new Shooter(Hardware.Motors.spark(4));
 
-        this.sweeper = new Sweeper(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
+        this.sweeper = new Climber(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
 
         this.agitators = new HopperAgitators(Hardware.Motors.victor(5));
 
@@ -99,6 +92,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopInit() {
+
         Config.update();
         // Kill anything if it is ...
         Strongback.disable();
@@ -110,6 +104,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         Config.update();
         drive.arcade(driveSpeed.read(), turnSpeed.read());
+//        System.out.println(Config.autoSender);
     }
 
     @Override
@@ -136,22 +131,24 @@ public class Robot extends IterativeRobot {
             turnSpeed = driveStick.getYaw().invert().map(Utils::finesseControl);
         }
 
-        sweeperSpeed = controller.getRightY();
-        reactor.onTriggered(controller.getA(), new SwitchToggle(new SweeperStartCommand(sweeper, sweeperSpeed), new SweeperStopCommand(sweeper))::run);
+        climberSpeed = controller.getRightY();
+        reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(sweeper, climberSpeed), new ClimberStopCommand(sweeper))::run);
+//
+        shooterSpeed = new ConfigRange(Config.shooterInitialSpeed,0, 1, Config.shooterInitialSpeed.get());
 
-        rightShooterSpeed = new SettableRange(0, 1, Config.rightShooterInitialSpeed.get());
+        agitatorSpeed = new ConfigRange(Config.agitatorSpeed,0,1, Config.agitatorSpeed.get());
 
         reactor.onTriggered(controller.getX(), new SwitchToggle(new AgitateStartCommand(agitators, agitatorSpeed), new AgitateStopCommand(agitators))::run);
 
-        reactor.onTriggered(controller.getButton(10), new SwitchToggle(new ContinuousFireCommand(rightShooter, rightShooterSpeed.invert()), new DisableFireCommand(rightShooter))::run);
+        reactor.onTriggered(controller.getButton(10), new SwitchToggle(new ContinuousFireCommand(rightShooter, shooterSpeed), new DisableFireCommand(rightShooter))::run);
 
         reactor.onTriggered(switchFromDpad(controller.getDPad(0), 270), () -> {
-            rightShooterSpeed.increment(0.01);
-            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
+            shooterSpeed.increment(0.01);
+            SmartDashboard.putNumber("right shooter speed", shooterSpeed.read() * 100);
         });
         reactor.onTriggered(switchFromDpad(controller.getDPad(0), 90), () -> {
-            rightShooterSpeed.decrement(00.01);
-            SmartDashboard.putNumber("right shooter speed", rightShooterSpeed.read() * 100);
+            shooterSpeed.decrement(0.01);
+            SmartDashboard.putNumber("right shooter speed", shooterSpeed.read() * 100);
         });
 
     }

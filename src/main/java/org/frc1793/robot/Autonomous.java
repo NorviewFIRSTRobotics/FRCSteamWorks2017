@@ -24,21 +24,22 @@ public class Autonomous {
     public Autonomous(TankDrive drive) {
         this.drive = drive;
     }
-
+    private static double turnTime = 0.42, driveTime0 = 0.88 , driveTime1 = 0.65;
     public void init() {
-        Strongback.submit(EnumAuto.valueOf(Config.autonomous.get()).getCommand());
+        Strongback.submit(EnumAuto.fromString(Config.autonomous.get()).getCommand());
     }
 
     public enum EnumAuto {
         CENTER(drive(0.9, -0.75, 0)),
-        RIGHT(drive(0.9, -0.75, 0),
-                drive(0.4, 0, 0.5),
-                drive(0.2, -0.5, 0)),
-        LEFT(drive(0.9, -0.75, 0),
-                drive(0.4, 0, -0.5),
-                drive(0.2, -0.5, 0)),
+        RIGHT(drive(driveTime0, -0.75, 0),
+                drive(turnTime , 0, 0.5),
+                drive(driveTime1, -0.5, 0)),
+        LEFT(drive(driveTime0, -0.75, 0),
+                drive(turnTime, 0, -0.5),
+                drive( driveTime1, -0.5, 0)),
         SHOOTING();
 
+        public static final EnumAuto[] VALUES = values();
         private Supplier<Command> command;
         private List<Supplier<Command>> commands;
         EnumAuto() {
@@ -63,6 +64,10 @@ public class Autonomous {
                 return command.get();
             }
         }
+        public static EnumAuto fromString(String str) {
+            return valueOf(str.toUpperCase());
+        }
+
     }
 
 }

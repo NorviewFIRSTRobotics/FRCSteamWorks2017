@@ -2,7 +2,6 @@ package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
 import org.frc1793.robot.commands.firing.ContinuousFireCommand;
-import org.frc1793.robot.components.Shooter;
 import org.junit.Before;
 import org.junit.Test;
 import org.strongback.command.CommandTester;
