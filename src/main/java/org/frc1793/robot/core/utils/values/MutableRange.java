@@ -1,16 +1,19 @@
-package org.frc1793.robot.utils.values;
+package org.frc1793.robot.core.utils.values;
 
 import org.strongback.components.ui.ContinuousRange;
 import org.strongback.util.Values;
 
 /**
  * Created by melvin on 2/8/2017.
+ * Mutable range with incrementation
  */
-public class SettableRange implements ContinuousRange {
+@SuppressWarnings("unused")
+public class MutableRange implements ContinuousRange {
     private double value;
-    private double max, min;
+    private final double max;
+    private final double min;
 
-    public SettableRange(double min, double max, double initial) {
+    public MutableRange(double min, double max, double initial) {
         this.max = max;
         this.min = min;
         this.value = initial;

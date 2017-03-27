@@ -1,9 +1,10 @@
-package org.frc1793.robot.utils.math;
+package org.frc1793.robot.core.utils.math;
 
 import java.util.function.BinaryOperator;
 
 /**
  * Created by melvin on 3/14/2017.
+ * Object which holds 3 values and allows addition and multiplication operators to be defined.
  */
 public class Vector<T> {
     private T x, y, z;
@@ -29,7 +30,7 @@ public class Vector<T> {
     }
 
     public Vector multiply(Vector<T> vector, BinaryOperator<T> multiply) {
-        return new Vector(multiply.apply(this.x, vector.x), multiply.apply(this.y, vector.y), multiply.apply(this.z, vector.z));
+        return new Vector<>(multiply.apply(this.x, vector.x), multiply.apply(this.y, vector.y), multiply.apply(this.z, vector.z));
     }
 
     @Override

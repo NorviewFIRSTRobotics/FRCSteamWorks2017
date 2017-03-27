@@ -1,9 +1,8 @@
-package org.frc1793.robot.utils.math;
-
-import org.frc1793.robot.utils.math.Vector;
+package org.frc1793.robot.core.utils.math;
 
 /**
  * Created by melvin on 3/14/2017.
+ * 3 Vector of Doubles
  */
 public class DoubleVector extends Vector<Double> {
     public DoubleVector(Double x, Double y, Double z) {

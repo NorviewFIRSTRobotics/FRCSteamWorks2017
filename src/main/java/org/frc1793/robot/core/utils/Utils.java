@@ -1,9 +1,8 @@
-package org.frc1793.robot.utils;
+package org.frc1793.robot.core.utils;
 
 import edu.wpi.first.wpilibj.Joystick;
 import org.strongback.components.Switch;
 import org.strongback.components.ui.DirectionalAxis;
-import org.strongback.components.ui.FlightStick;
 import org.strongback.components.ui.Gamepad;
 
 /**
@@ -12,40 +11,24 @@ import org.strongback.components.ui.Gamepad;
  * @author Tyler Marshall
  * @version 2/22/17
  */
+@SuppressWarnings("unused")
 public class Utils {
 
-    public static double finesseControl(double x) {
+    public static double finesseControl(double val) {
         double a = 0.5, b = 0.5;
-        double y;
-        if (x > 0) {
-            if (x <= a) {
-                y = x * b;
+        if (val > 0) {
+            if (val <= a) {
+                return val * b;
             } else {
-                y = x;
+                return val;
             }
         } else {
-            if (x > -a) {
-                y = x * b;
+            if (val > -a) {
+                return val * b;
             } else {
-                y = x;
+                return val;
             }
         }
-        return y;
-    }
-
-    public static FlightStick microsoftSideWinder(int port) {
-        Joystick joystick = new Joystick(port);
-        joystick.getButtonCount();
-        return FlightStick.create(
-                joystick::getRawAxis,
-                joystick::getRawButton,
-                joystick::getPOV,
-                () -> joystick.getY() * -1.0D,
-                joystick::getTwist,
-                joystick::getX,
-                joystick::getThrottle,
-                () -> joystick.getRawButton(1),
-                () -> joystick.getRawButton(2));
     }
 
     public static Gamepad logitechDualAction(int port) {

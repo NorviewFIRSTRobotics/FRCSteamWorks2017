@@ -1,8 +1,7 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.utils.Utils;
-import org.junit.Before;
+import org.frc1793.robot.core.utils.Utils;
 import org.junit.Test;
 
 import java.util.function.DoubleFunction;
@@ -15,12 +14,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Tyler Marshall
  * @version 2/22/17
  */
-public class FineseTest {
+public class FinesseTest {
     private final Delta TOLERANCE = Delta.delta(0.001);
-    @Before
-    public void beforeEach() {
-
-    }
 
     @Test
     public void shouldBeCorrect() {

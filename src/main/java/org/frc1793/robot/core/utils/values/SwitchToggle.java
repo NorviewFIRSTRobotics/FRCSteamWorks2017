@@ -1,4 +1,4 @@
-package org.frc1793.robot.utils.values;
+package org.frc1793.robot.core.utils.values;
 
 
 import org.strongback.Strongback;
@@ -6,10 +6,12 @@ import org.strongback.command.Command;
 
 /**
  * Created by melvin on 2/15/2017.
+ * Toggle between two commands in press of a button
  */
 public class SwitchToggle {
     private boolean running;
-    private Command start, stop;
+    private final Command start;
+    private final Command stop;
 
     public SwitchToggle(Command start, Command stop) {
         this.start = start;

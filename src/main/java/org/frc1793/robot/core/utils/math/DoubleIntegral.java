@@ -1,4 +1,4 @@
-package org.frc1793.robot.utils.math;
+package org.frc1793.robot.core.utils.math;
 
 /**
  * Purpose:

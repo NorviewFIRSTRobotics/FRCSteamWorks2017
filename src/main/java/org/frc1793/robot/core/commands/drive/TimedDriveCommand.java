@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.frc1793.robot.commands.drive;
+package org.frc1793.robot.core.commands.drive;
 
 import org.strongback.command.Command;
 import org.strongback.drive.TankDrive;

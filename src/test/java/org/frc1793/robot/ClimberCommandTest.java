@@ -1,9 +1,9 @@
 package org.frc1793.robot;
 
 import org.fest.assertions.Delta;
-import org.frc1793.robot.commands.climber.ClimberStartCommand;
-import org.frc1793.robot.commands.climber.ClimberStopCommand;
-import org.frc1793.robot.components.Climber;
+import org.frc1793.robot.core.commands.climber.ClimberStartCommand;
+import org.frc1793.robot.core.commands.climber.ClimberStopCommand;
+import org.frc1793.robot.core.components.Climber;
 import org.frc1793.robot.mocks.MockCRange;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Tyler Marshall
  * @version 1/8/17
  */
-public class SweeperCommandTest {
+public class ClimberCommandTest {
 
     private final Delta TOLERANCE = Delta.delta(0.001);
     private final long START_TIME_MS = 1000;
@@ -37,7 +37,7 @@ public class SweeperCommandTest {
         speed = new MockCRange();
     }
     @Test
-    public void shouldContinueouslySweep() {
+    public void shouldContinuouslySweep() {
         tester = new CommandTester(new ClimberStartCommand(sweeper));
         assertThat(left.getSpeed()).isEqualTo(0.0, TOLERANCE);
         assertThat(right.getSpeed()).isEqualTo(0.0, TOLERANCE);

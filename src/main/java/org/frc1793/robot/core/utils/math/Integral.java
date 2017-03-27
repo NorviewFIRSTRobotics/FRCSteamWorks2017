@@ -1,13 +1,15 @@
-package org.frc1793.robot.utils.math;
+package org.frc1793.robot.core.utils.math;
 
 import java.util.function.BinaryOperator;
 
 /**
  * Created by melvin on 3/14/2017.
+ * Riemann sum any object with a denoted addition and multiplication operator
  */
 public class Integral<T> {
-    T accumuation;
-    BinaryOperator<T> addition, multiplier;
+    T accumulation;
+    final BinaryOperator<T> addition;
+    final BinaryOperator<T> multiplier;
 
     protected Integral(BinaryOperator<T> addition, BinaryOperator<T> multiplier) {
         this.addition = addition;
@@ -16,13 +18,13 @@ public class Integral<T> {
 
     public void integrate(T value, T time) {
         T scaled = multiplier.apply(value, time);
-        if (accumuation == null)
-            accumuation = scaled;
+        if (accumulation == null)
+            accumulation = scaled;
         else
-            accumuation = addition.apply(scaled, accumuation);
+            accumulation = addition.apply(scaled, accumulation);
     }
 
     public T getValue() {
-        return accumuation;
+        return accumulation;
     }
 }

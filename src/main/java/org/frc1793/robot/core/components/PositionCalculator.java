@@ -1,7 +1,7 @@
-package org.frc1793.robot.components;
+package org.frc1793.robot.core.components;
 
-import org.frc1793.robot.utils.math.DoubleVector;
-import org.frc1793.robot.utils.math.DoubleVectorIntegral;
+import org.frc1793.robot.core.utils.math.DoubleVector;
+import org.frc1793.robot.core.utils.math.DoubleVectorIntegral;
 import org.strongback.Strongback;
 import org.strongback.components.Clock;
 import org.strongback.components.DistanceSensor;
@@ -10,13 +10,17 @@ import org.strongback.components.ThreeAxisAccelerometer;
 
 /**
  * Created by melvin on 3/14/2017.
+ * Class to handle integration of acceleration via an accelerometer
+ * to get change in distance.
  */
+@SuppressWarnings("unused")
 public class PositionCalculator implements DistanceSensor {
-    private ThreeAxisAccelerometer accelerometer;
+    private final ThreeAxisAccelerometer accelerometer;
 
-    private Clock clock;
-    private long delta, prev, current;
-    private DoubleVectorIntegral velocity = new DoubleVectorIntegral(), position = new DoubleVectorIntegral();
+    private final Clock clock;
+    private long prev, current;
+    private final DoubleVectorIntegral velocity = new DoubleVectorIntegral();
+    private final DoubleVectorIntegral position = new DoubleVectorIntegral();
 
     public PositionCalculator(Clock clock,ThreeAxisAccelerometer accelerometer) {
         this.clock = clock;
@@ -29,7 +33,7 @@ public class PositionCalculator implements DistanceSensor {
 
     public void calculatePosition() {
         current = clock.currentTimeInMicros();
-        delta = current - prev;
+        long delta = current - prev;
         prev = current;
         DoubleVector deltaVector = new DoubleVector((double)delta/1000000);
         ThreeAxisAcceleration a = accelerometer.getAcceleration();

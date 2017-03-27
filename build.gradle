@@ -14,13 +14,10 @@ repositories {
     mavenCentral()
 }
 dependencies {
-
     //noinspection GroovyAssignabilityCheck
     compile wpilib()
     //noinspection GroovyAssignabilityCheck
     compile talonSrx()
-
-
     //Necessary for Strongback-Testing
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'org.easytesting', name: 'fest-assert', version: '1.4'
@@ -29,7 +26,6 @@ dependencies {
     testCompile group: 'com.codahale.metrics', name: 'metrics-core', version: '+'
 //    //Adds Strongback and Strongback-Testing libraries
     compile fileTree(dir: 'libs', include: '**/*.jar')
-
 }
 
 def robotManifest = {

@@ -1,7 +1,3 @@
 # Created by .ignore support plugin (hsz.mobi)
-/build/
-.idea/workspace.xml
-.idea/tasks.xml
 .idea/
 build/
-/dist/

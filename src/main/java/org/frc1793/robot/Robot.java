@@ -2,19 +2,14 @@ package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.frc1793.robot.commands.agitator.AgitateStartCommand;
-import org.frc1793.robot.commands.agitator.AgitateStopCommand;
-import org.frc1793.robot.commands.firing.ContinuousFireCommand;
-import org.frc1793.robot.commands.firing.DisableFireCommand;
-import org.frc1793.robot.commands.climber.ClimberStartCommand;
-import org.frc1793.robot.commands.climber.ClimberStopCommand;
-import org.frc1793.robot.components.PositionCalculator;
-import org.frc1793.robot.components.Climber;
-import org.frc1793.robot.components.DriverCamera;
-import org.frc1793.robot.utils.values.ConfigRange;
-import org.frc1793.robot.utils.values.SwitchToggle;
-import org.frc1793.robot.utils.Utils;
+import org.frc1793.robot.core.auto.Autonomous;
+import org.frc1793.robot.core.commands.climber.ClimberStartCommand;
+import org.frc1793.robot.core.commands.climber.ClimberStopCommand;
+import org.frc1793.robot.core.components.Climber;
+import org.frc1793.robot.core.components.DriverCamera;
+import org.frc1793.robot.core.config.Config;
+import org.frc1793.robot.core.utils.Utils;
+import org.frc1793.robot.core.utils.values.SwitchToggle;
 import org.strongback.Logger;
 import org.strongback.Strongback;
 import org.strongback.SwitchReactor;
@@ -27,28 +22,30 @@ import org.strongback.components.ui.Gamepad;
 import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 
-import static org.frc1793.robot.Config.isControllerDrive;
-import static org.frc1793.robot.utils.Utils.*;
+import static org.frc1793.robot.core.config.Config.isControllerDrive;
+import static org.frc1793.robot.core.utils.Utils.logitechDualAction;
+import static org.strongback.hardware.Hardware.HumanInterfaceDevices.microsoftSideWinder;
 
 @SuppressWarnings("ALL")
 public class Robot extends IterativeRobot {
 
     private TankDrive drive;
-    private Shooter rightShooter;
-    private HopperAgitators agitators;
-    private Climber sweeper;
-    private DriverCamera driverCamera;
-    private PositionCalculator position;
+    private Climber climber;
+    private DriverCamera camera;
+
     private CurrentSensor current;
     private VoltageSensor battery;
-    private Autonomous autonomous;
 
-    private ConfigRange shooterSpeed;
-    private ConfigRange agitatorSpeed;
+    private Autonomous autonomous;
 
     private ContinuousRange climberSpeed;
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
+
+    public static final double turnTime = 0.42;
+    public static final double driveTime0 = 0.88;
+    public static final double driveTime1 = 0.65;
+
     @Override
     public void robotInit() {
         Strongback.configure().recordNoEvents().setLogLevel(Logger.Level.DEBUG);
@@ -56,22 +53,15 @@ public class Robot extends IterativeRobot {
 
         this.battery = Hardware.powerPanel().getVoltageSensor();
         this.current = Hardware.powerPanel().getTotalCurrentSensor();
+        //hallo from bee! :3
 
         Motor left = Motor.compose(Hardware.Motors.talon(0), Hardware.Motors.talon(1));
         Motor right = Motor.compose(Hardware.Motors.talon(2), Hardware.Motors.talon(3)).invert();
         this.drive = new TankDrive(left, right);
-        //hallo from bee! :3
-        this.rightShooter = new Shooter(Hardware.Motors.spark(4));
-
-        this.sweeper = new Climber(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
-
-        this.agitators = new HopperAgitators(Hardware.Motors.victor(5));
-
-        this.driverCamera = new DriverCamera();
+        this.climber = new Climber(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
+        this.camera = new DriverCamera();
 
         this.autonomous = new Autonomous(drive);
-
-        this.position = new PositionCalculator(Hardware.Accelerometers.builtIn());
 
         this.initializeHumanInteraction();
     }
@@ -81,18 +71,14 @@ public class Robot extends IterativeRobot {
         Strongback.disable();
         Strongback.start();
         Config.update();
-
         autonomous.init();
     }
 
     @Override
-    public void autonomousPeriodic() {
-
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
-
         Config.update();
         // Kill anything if it is ...
         Strongback.disable();
@@ -104,7 +90,6 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         Config.update();
         drive.arcade(driveSpeed.read(), turnSpeed.read());
-//        System.out.println(Config.autoSender);
     }
 
     @Override
@@ -130,27 +115,8 @@ public class Robot extends IterativeRobot {
             driveSpeed = driveStick.getPitch().map(Utils::finesseControl);
             turnSpeed = driveStick.getYaw().invert().map(Utils::finesseControl);
         }
-
         climberSpeed = controller.getRightY();
-        reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(sweeper, climberSpeed), new ClimberStopCommand(sweeper))::run);
-//
-        shooterSpeed = new ConfigRange(Config.shooterInitialSpeed,0, 1, Config.shooterInitialSpeed.get());
-
-        agitatorSpeed = new ConfigRange(Config.agitatorSpeed,0,1, Config.agitatorSpeed.get());
-
-        reactor.onTriggered(controller.getX(), new SwitchToggle(new AgitateStartCommand(agitators, agitatorSpeed), new AgitateStopCommand(agitators))::run);
-
-        reactor.onTriggered(controller.getButton(10), new SwitchToggle(new ContinuousFireCommand(rightShooter, shooterSpeed), new DisableFireCommand(rightShooter))::run);
-
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 270), () -> {
-            shooterSpeed.increment(0.01);
-            SmartDashboard.putNumber("right shooter speed", shooterSpeed.read() * 100);
-        });
-        reactor.onTriggered(switchFromDpad(controller.getDPad(0), 90), () -> {
-            shooterSpeed.decrement(0.01);
-            SmartDashboard.putNumber("right shooter speed", shooterSpeed.read() * 100);
-        });
-
+        reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(climber, climberSpeed), new ClimberStopCommand(climber))::run);
     }
 
 }
