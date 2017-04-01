@@ -18,7 +18,7 @@ public class SwitchToggle {
         this.stop = stop;
     }
 
-    public void run() {
+    public void execute() {
         if (running) {
             Strongback.submit(stop);
         } else {

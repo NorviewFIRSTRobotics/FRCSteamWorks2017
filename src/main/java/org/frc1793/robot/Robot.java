@@ -5,8 +5,12 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.frc1793.robot.core.auto.Autonomous;
 import org.frc1793.robot.core.commands.climber.ClimberStartCommand;
 import org.frc1793.robot.core.commands.climber.ClimberStopCommand;
+import org.frc1793.robot.core.commands.gear.CloseGearCommand;
+import org.frc1793.robot.core.commands.gear.OpenGearCommand;
 import org.frc1793.robot.core.components.Climber;
 import org.frc1793.robot.core.components.DriverCamera;
+import org.frc1793.robot.core.components.HardwareServo;
+import org.frc1793.robot.core.components.Servo;
 import org.frc1793.robot.core.config.Config;
 import org.frc1793.robot.core.utils.Utils;
 import org.frc1793.robot.core.utils.values.SwitchToggle;
@@ -30,6 +34,7 @@ import static org.strongback.hardware.Hardware.HumanInterfaceDevices.microsoftSi
 public class Robot extends IterativeRobot {
 
     private TankDrive drive;
+    private Servo gearLeft, gearRight;
     private Climber climber;
     private DriverCamera camera;
 
@@ -60,6 +65,9 @@ public class Robot extends IterativeRobot {
         this.drive = new TankDrive(left, right);
         this.climber = new Climber(Hardware.Motors.talonSRX(0), Hardware.Motors.talonSRX(1));
         this.camera = new DriverCamera();
+
+        this.gearLeft = new HardwareServo(4,90,0);
+        this.gearRight = new HardwareServo(5,-90,0);
 
         this.autonomous = new Autonomous(drive);
 
@@ -116,7 +124,10 @@ public class Robot extends IterativeRobot {
             turnSpeed = driveStick.getYaw().invert().map(Utils::finesseControl);
         }
         climberSpeed = controller.getRightY();
-        reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(climber, climberSpeed), new ClimberStopCommand(climber))::run);
+        reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(climber, climberSpeed), new ClimberStopCommand(climber))::execute);
+
+        reactor.onTriggered(controller.getB(), new SwitchToggle(new OpenGearCommand(gearLeft,gearRight), new CloseGearCommand(gearLeft,gearRight))::execute);
+
     }
 
 }
