@@ -1,7 +1,7 @@
 # Code for FRC SteamWorks 2017
 
-<link rel="style" href="https://raw.githubusercontent.com/ErikBoesen/banners.css/master/banners.css">
-<div class="banner"><img src="first.svg">2017 Hampton Roads District Winners</div>
+<link rel="style" href="banners.css">
+<div class="banner"><img src="FIRST_logo.png">2017 Hampton Roads District Winners</div>
 
 
 This is the code for Team 1793's Robot for the FIRST Robotics Competion.
