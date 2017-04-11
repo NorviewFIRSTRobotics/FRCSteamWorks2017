@@ -2,7 +2,10 @@ package org.frc1793.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc1793.robot.core.auto.Autonomous;
+import org.frc1793.robot.core.auto.EnumAuto;
 import org.frc1793.robot.core.commands.climber.ClimberStartCommand;
 import org.frc1793.robot.core.commands.climber.ClimberStopCommand;
 import org.frc1793.robot.core.commands.gear.CloseGearCommand;
@@ -12,6 +15,7 @@ import org.frc1793.robot.core.components.DriverCamera;
 import org.frc1793.robot.core.components.HardwareServo;
 import org.frc1793.robot.core.components.Servo;
 import org.frc1793.robot.core.config.Config;
+import org.frc1793.robot.core.config.ConfigOption;
 import org.frc1793.robot.core.utils.Utils;
 import org.frc1793.robot.core.utils.values.SwitchToggle;
 import org.strongback.Logger;
@@ -26,6 +30,7 @@ import org.strongback.components.ui.Gamepad;
 import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 
+import static org.frc1793.robot.core.config.Config.config;
 import static org.frc1793.robot.core.config.Config.isControllerDrive;
 import static org.frc1793.robot.core.utils.Utils.logitechDualAction;
 import static org.strongback.hardware.Hardware.HumanInterfaceDevices.microsoftSideWinder;
@@ -47,9 +52,9 @@ public class Robot extends IterativeRobot {
     private ContinuousRange driveSpeed;
     private ContinuousRange turnSpeed;
 
-    public static final double turnTime = 0.42;
+    public static final double turnTime = 0.52;
     public static final double driveTime0 = 0.88;
-    public static final double driveTime1 = 0.65;
+    public static final double driveTime1 = 0.71;
 
     @Override
     public void robotInit() {
@@ -72,6 +77,7 @@ public class Robot extends IterativeRobot {
         this.autonomous = new Autonomous(drive);
 
         this.initializeHumanInteraction();
+
     }
 
     @Override
@@ -125,7 +131,6 @@ public class Robot extends IterativeRobot {
         }
         climberSpeed = controller.getRightY();
         reactor.onTriggered(controller.getA(), new SwitchToggle(new ClimberStartCommand(climber, climberSpeed), new ClimberStopCommand(climber))::execute);
-
         reactor.onTriggered(controller.getB(), new SwitchToggle(new OpenGearCommand(gearLeft,gearRight), new CloseGearCommand(gearLeft,gearRight))::execute);
 
     }

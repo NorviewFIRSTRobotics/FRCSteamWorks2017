@@ -1,6 +1,7 @@
 package org.frc1793.robot.core.config;
 
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Purpose:
@@ -13,7 +14,6 @@ public class Config {
 
     public static ConfigOption<Boolean> isControllerDrive;
     public static ConfigOption<String> autonomous;
-
 
     public static void init() {
         autonomous = config("autonomous", "CENTER");
